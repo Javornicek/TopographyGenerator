@@ -143,25 +143,31 @@
           <span>PNG</span>
           <i class="fa-solid fa-angle-down text-[10px] ml-0.5 opacity-70"></i>
         </button>
-        <div class="absolute right-0 mt-1 w-44 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl py-1.5 hidden group-hover:block z-50 text-xs">
-          <div class="px-3 py-1 text-[10px] uppercase font-bold tracking-wider text-slate-400 border-b border-slate-700/60 mb-1">
-            Rozlišení PNG
+        <div class="absolute right-0 mt-1 w-52 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl py-1.5 hidden group-hover:block z-50 text-xs">
+          <div class="px-3 py-1 text-[10px] uppercase font-bold tracking-wider text-slate-400 border-b border-slate-700/60 mb-1 flex justify-between items-center">
+            <span>Rozlišení PNG</span>
+            <span id="pngExportCropBadge" class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-normal">100% W × H</span>
           </div>
           <button class="w-full text-left px-3 py-1.5 hover:bg-slate-700 text-slate-200 flex items-center justify-between" onclick="exportPNG(1)">
             <span>1x Standard</span>
-            <span class="text-[10px] text-slate-400 font-mono">100%</span>
+            <span id="pngRes1x" class="text-[10px] text-slate-400 font-mono">1920 × 1080</span>
           </button>
           <button class="w-full text-left px-3 py-1.5 hover:bg-slate-700 text-slate-200 flex items-center justify-between" onclick="exportPNG(2)">
             <span>2x Retina HD</span>
-            <span class="text-[10px] text-brand-400 font-mono">200%</span>
+            <span id="pngRes2x" class="text-[10px] text-brand-400 font-mono">3840 × 2160</span>
           </button>
           <button class="w-full text-left px-3 py-1.5 hover:bg-slate-700 text-slate-200 flex items-center justify-between" onclick="exportPNG(4)">
             <span>4x Ultra Print</span>
-            <span class="text-[10px] text-emerald-400 font-mono">4K UHD</span>
+            <span id="pngRes4x" class="text-[10px] text-emerald-400 font-mono">7680 × 4320</span>
           </button>
+          <div class="border-t border-slate-700/60 mt-1 pt-1.5 px-3">
+            <label class="flex items-center gap-2 cursor-pointer text-[11px] text-slate-300 hover:text-white">
+              <input type="checkbox" id="headerFillToggle" checked class="rounded border-slate-700 text-cyan-500 focus:ring-0 cursor-pointer">
+              <span>Vyplnit 100% rozlišení</span>
+            </label>
+          </div>
         </div>
       </div>
-    </div>
   </header>
 
   <!-- Hlavní pracovní plocha (přesně ohraničená) -->
@@ -178,6 +184,10 @@
             <span class="text-[10px] text-slate-500 font-normal">11 stylů</span>
           </label>
           <div class="grid grid-cols-2 gap-2 text-xs">
+            <button class="preset-style-btn px-2.5 py-2 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/50 text-left text-emerald-300 flex items-center gap-2 transition hover:border-emerald-400" data-preset="seamless-matrix" title="Nekonečný bezešvý opakovatelný vzor (obousměrná dlaždice X a Y)">
+              <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shrink-0"></span>
+              <span class="truncate font-semibold">Nekonečný Vzor (2D)</span>
+            </button>
             <button class="preset-style-btn px-2.5 py-2 rounded-lg bg-slate-800/90 hover:bg-slate-750 border border-slate-700/80 text-left text-slate-200 flex items-center gap-2 transition hover:border-brand-500/60" data-preset="vintage-topo" title="Autentická topografická mapa podle vzoru 1 (krémový papír, uhlové čáry, mřížka a křížky)">
               <span class="w-3 h-3 rounded-full bg-[#fbf9f5] border border-[#2b2f33] shrink-0"></span>
               <span class="truncate font-medium">Vintage Topo (Vzor 1)</span>
@@ -185,10 +195,6 @@
             <button class="preset-style-btn px-2.5 py-2 rounded-lg bg-slate-800/90 hover:bg-slate-750 border border-slate-700/80 text-left text-slate-200 flex items-center gap-2 transition hover:border-brand-500/60" data-preset="ocean-blueprint" title="Azurový blueprint podle vzoru 2 (bílé křivky, oceánské vlny, mřížka)">
               <span class="w-3 h-3 rounded-full bg-[#0284c7] border border-white shrink-0"></span>
               <span class="truncate font-medium">Ocean Blue (Vzor 2)</span>
-            </button>
-            <button class="preset-style-btn px-2.5 py-2 rounded-lg bg-slate-800/90 hover:bg-slate-750 border border-purple-500/60 text-left text-purple-300 flex items-center gap-2 transition hover:border-purple-400" data-preset="liquid-violet" title="Full hladké organické křivky podle vzoru 3 (grafitové pozadí, fialové linie, liquid blobs)">
-              <span class="w-3 h-3 rounded-full bg-[#1F222E] border border-[#8B5CF6] shrink-0"></span>
-              <span class="truncate font-semibold text-purple-300">Liquid Violet (Vzor 3)</span>
             </button>
             <button class="preset-style-btn px-2.5 py-2 rounded-lg bg-slate-800/90 hover:bg-slate-750 border border-brand-500/40 text-left text-brand-300 flex items-center gap-2 transition hover:border-brand-500" data-preset="3d-alpine" title="3D Izometrický reliéf s prostorovým náklonem a výškou">
               <span class="w-3 h-3 rounded-full bg-brand-500 border border-white shrink-0"></span>
@@ -235,7 +241,6 @@
           <select id="generatorMode" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-brand-500 cursor-pointer">
             <option value="topo-alpine" selected>Autentická topografie (Alpy & Vrcholky - Vzor 1)</option>
             <option value="smooth-blueprint">Vlny & Blueprint (Laminární linie - Vzor 2)</option>
-            <option value="ultra-smooth">Full hladké křivky (Liquid Blobs - Vzor 3)</option>
             <option value="concentric-islands">Koncentrické ostrovy & Archipelág</option>
             <option value="ridged-canyons">Erozní kaňony & Hřebeny</option>
             <option value="turbulent-fluid">Fluidní vírová turbulence</option>
@@ -343,6 +348,21 @@
               </div>
               <input type="range" id="height3D" min="0" max="250" step="5" value="90" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
             </div>
+
+            <!-- Vertikální expanze / roztažení ve 3D -->
+            <div>
+              <div class="flex justify-between items-center text-xs mb-1.5">
+                <span class="text-slate-300">Vertikální expanze (Y-Scale)</span>
+                <span id="scaleY3DVal" class="font-mono text-brand-400 font-semibold">1.0 ×</span>
+              </div>
+              <input type="range" id="scaleY3D" min="0.5" max="3.0" step="0.05" value="1.0" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+              <div class="flex justify-between items-center mt-1">
+                <span class="text-[10px] text-slate-500">Přirozený náklon</span>
+                <button type="button" id="btnAutofillHeight3D" class="text-[10px] text-cyan-400 hover:text-cyan-300 underline font-mono">
+                  Vyrovnat výšku plátna
+                </button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -389,14 +409,13 @@
           <div>
             <div class="flex justify-between items-center text-xs mb-1.5">
               <span class="text-slate-300">Vyhlazení křivek</span>
-              <span id="smoothVal" class="font-mono text-purple-400 font-semibold">Full Hladké (Liquid)</span>
+              <span id="smoothVal" class="font-mono text-brand-400 font-semibold">Ultra Bézier (Hladké)</span>
             </div>
-            <input type="range" id="smoothness" min="0" max="3" step="1" value="3" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+            <input type="range" id="smoothness" min="0" max="2" step="1" value="2" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
             <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
               <span>Lomené</span>
               <span>Plynulé</span>
-              <span>Bézier</span>
-              <span class="text-purple-400 font-medium">Full Hladké</span>
+              <span>Ultra Bézier</span>
             </div>
           </div>
 
@@ -631,6 +650,137 @@
           </div>
         </section>
 
+        <hr class="border-slate-800/80">
+
+        <!-- 10. Vyplnění rozlišení & Přizpůsobení plátna (100% W × H) -->
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+              <i class="fa-solid fa-expand text-cyan-400"></i> Vyplnění rozlišení (100% W × H)
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-medium border border-cyan-500/20">Žádné pruhy</span>
+          </div>
+
+          <!-- Hlavní přepínač 100% vyplnění -->
+          <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="fillCanvas100" class="text-xs text-slate-200 cursor-pointer flex items-center gap-2 font-medium">
+                <i class="fa-solid fa-arrows-up-down-left-right text-cyan-400"></i> Vyplnit 100% rozlišení plátna
+              </label>
+              <input type="checkbox" id="fillCanvas100" checked class="w-4 h-4 rounded text-cyan-600 focus:ring-0 cursor-pointer">
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Soubor si zachová přesné zvolené rozlišení (např. 1920 × 1080 px) a vzor vyplní 100 % jeho šířky i výšky bez prázdných pruhů nahoře a dole.
+            </p>
+          </div>
+
+          <!-- Režim přizpůsobení -->
+          <div class="space-y-2">
+            <label class="block text-[11px] text-slate-400">Metoda pokrytí plátna</label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button type="button" id="btnModeStretch" class="fit-mode-btn px-2.5 py-1.5 bg-cyan-600 text-white rounded font-medium text-center transition flex items-center justify-center gap-1.5" data-mode="stretch-100">
+                <i class="fa-solid fa-arrows-left-right-to-line text-[11px]"></i>
+                <span>100% W × H</span>
+              </button>
+              <button type="button" id="btnModeCover" class="fit-mode-btn px-2.5 py-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded font-medium text-center transition flex items-center justify-center gap-1.5" data-mode="cover-100">
+                <i class="fa-solid fa-maximize text-[11px]"></i>
+                <span>Proporcionální</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Informace o rozlišení a pokrytí -->
+          <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 text-[11px] space-y-1.5 font-mono">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Rozlišení souboru:</span>
+              <span id="exportResText" class="text-cyan-400 font-bold">1440 × 900 px</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Pokrytí plochy vzorem:</span>
+              <span id="patternCoverageText" class="text-emerald-400 font-semibold">100% šířka × 100% výška</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-slate-800/80 pt-1">
+              <span class="text-slate-400">Prázdné pruhy nahoře/dole:</span>
+              <span id="blankBarsText" class="text-emerald-400 font-semibold">0 px (Odstraněno)</span>
+            </div>
+          </div>
+
+          <!-- Odsazení od okrajů (Padding) -->
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Odsazení od hran (Padding)</span>
+              <span id="canvasPaddingVal" class="font-mono text-cyan-400 font-semibold">0 px (100% k hraně)</span>
+            </div>
+            <input type="range" id="canvasPadding" min="0" max="80" step="5" value="0" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+            <div class="grid grid-cols-4 gap-1 mt-1.5 text-[10px] font-mono">
+              <button type="button" class="pad-preset-btn px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 text-center transition" data-pad="0">0 px</button>
+              <button type="button" class="pad-preset-btn px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 text-center transition" data-pad="10">10 px</button>
+              <button type="button" class="pad-preset-btn px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 text-center transition" data-pad="25">25 px</button>
+              <button type="button" class="pad-preset-btn px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 text-center transition" data-pad="50">50 px</button>
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80">
+
+        <!-- 11. Nekonečný opakovatelný vzor (Seamless / Repeatable Tile) -->
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+              <i class="fa-solid fa-repeat text-emerald-400"></i> Nekonečný vzor (Seamless)
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-medium border border-emerald-500/20">Dlaždice</span>
+          </div>
+
+          <!-- Přepínač bezešvého vzoru -->
+          <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="seamlessMode" class="text-xs text-slate-200 cursor-pointer flex items-center gap-2 font-medium">
+                <i class="fa-solid fa-infinity text-emerald-400"></i> Generovat bezešvý vzor
+              </label>
+              <input type="checkbox" id="seamlessMode" class="w-4 h-4 rounded text-emerald-600 focus:ring-0 cursor-pointer">
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Křivky na protilehlých hranách na sebe 100% navazují. Lze použít pro nekonečné opakování (CSS repeat, tapety, 3D textury).
+            </p>
+          </div>
+
+          <div id="containerSeamlessOptions" class="space-y-3.5 hidden">
+            <!-- Směr napojení -->
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1.5">Směr bezešvého napojení</label>
+              <div class="grid grid-cols-2 gap-1.5 text-xs">
+                <button type="button" id="btnSeamlessAxesXY" class="seamless-axis-btn px-2.5 py-1.5 bg-emerald-600 text-white rounded font-medium text-center transition flex items-center justify-center gap-1.5" data-axes="xy">
+                  <i class="fa-solid fa-arrows-up-down-left-right text-[11px]"></i>
+                  <span>Dlaždice (X i Y)</span>
+                </button>
+                <button type="button" id="btnSeamlessAxesX" class="seamless-axis-btn px-2.5 py-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded font-medium text-center transition flex items-center justify-center gap-1.5" data-axes="x">
+                  <i class="fa-solid fa-arrows-left-right text-[11px]"></i>
+                  <span>Pouze vodorovně</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tlačítko náhledu dlaždic 2x2 -->
+            <button type="button" id="btnToggleTilingPreview" class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500/50 text-slate-200 text-xs font-medium transition flex items-center justify-center gap-2 shadow-sm">
+              <i class="fa-solid fa-border-all text-emerald-400"></i>
+              <span id="toggleTilingPreviewText">Přepnout náhled spojení 2×2</span>
+            </button>
+
+            <!-- Tlačítka pro export vzoru -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button type="button" id="btnCopyCssPattern" title="Zkopírovat CSS kód pro nekonečné pozadí" class="py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-[11px] font-medium transition flex items-center justify-center gap-1.5">
+                <i class="fa-brands fa-css3-alt text-brand-400"></i>
+                <span>Kopírovat CSS</span>
+              </button>
+              <button type="button" id="btnExportTiled2x2" title="Stáhnout 2×2 spojené dlaždice jako SVG" class="py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-[11px] font-medium transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-download text-emerald-400"></i>
+                <span>Stáhnout 2×2 SVG</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
       </div>
     </aside>
 
@@ -645,6 +795,10 @@
             <i class="fa-regular fa-image text-brand-400"></i>
             <span id="infoDim" class="font-mono">1440 × 900 px</span>
           </span>
+          <span id="infoFillBadge" class="hidden sm:flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 font-mono border border-cyan-500/30">
+            <i class="fa-solid fa-arrows-up-down-left-right text-[10px]"></i>
+            <span id="infoFillText">100% W × H</span>
+          </span>
           <span class="text-slate-700 hidden sm:inline">•</span>
           <span class="hidden sm:flex items-center gap-1.5">
             <i class="fa-solid fa-bezier-curve text-indigo-400"></i>
@@ -657,6 +811,9 @@
           </span>
           <span id="badge3D" class="hidden items-center gap-1 px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-300 border border-brand-500/40 text-[10px] font-medium">
             <i class="fa-solid fa-cube text-[9px]"></i> 3D Aktivní
+          </span>
+          <span id="badgeSeamless" class="hidden items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-medium">
+            <i class="fa-solid fa-repeat text-[9px]"></i> Nekonečný vzor
           </span>
         </div>
 
@@ -680,6 +837,12 @@
 
           <button id="btnZoom100" title="Skutečná velikost 100%" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition hidden md:inline border border-slate-700 text-xs">
             100%
+          </button>
+
+          <!-- Tlačítko 2x2 náhledu nekonečného vzoru -->
+          <button id="btnToolbarTiling" title="Přepnout náhled spojení 2×2 dlaždic (Klávesa T)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center gap-1.5 border border-slate-700 text-xs">
+            <i id="tilingPreviewIcon" class="fa-solid fa-border-all text-slate-400"></i>
+            <span class="hidden sm:inline">2×2 Náhled</span>
           </button>
         </div>
       </div>
@@ -717,6 +880,16 @@
           [1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],
           [1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],
           [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]
+        ];
+        this.grad4 = [
+          [0,1,1,1], [0,1,1,-1], [0,1,-1,1], [0,1,-1,-1],
+          [0,-1,1,1], [0,-1,1,-1], [0,-1,-1,1], [0,-1,-1,-1],
+          [1,0,1,1], [1,0,1,-1], [1,0,-1,1], [1,0,-1,-1],
+          [-1,0,1,1], [-1,0,1,-1], [-1,0,-1,1], [-1,0,-1,-1],
+          [1,1,0,1], [1,1,0,-1], [1,-1,0,1], [1,-1,0,-1],
+          [-1,1,0,1], [-1,1,0,-1], [-1,-1,0,1], [-1,-1,0,-1],
+          [1,1,1,0], [1,1,-1,0], [1,-1,1,0], [1,-1,-1,0],
+          [-1,1,1,0], [-1,1,-1,0], [-1,-1,1,0], [-1,-1,-1,0]
         ];
         this.setSeed(seed);
       }
@@ -784,6 +957,124 @@
         return (70.0 * (n0 + n1 + n2) + 1) * 0.5;
       }
 
+      noise4D(x, y, z, w) {
+        const F4 = (Math.sqrt(5.0) - 1.0) / 4.0;
+        const G4 = (5.0 - Math.sqrt(5.0)) / 20.0;
+
+        const s = (x + y + z + w) * F4;
+        const i = Math.floor(x + s);
+        const j = Math.floor(y + s);
+        const k = Math.floor(z + s);
+        const l = Math.floor(w + s);
+
+        const t = (i + j + k + l) * G4;
+        const X0 = i - t;
+        const Y0 = j - t;
+        const Z0 = k - t;
+        const W0 = l - t;
+
+        const x0 = x - X0;
+        const y0 = y - Y0;
+        const z0 = z - Z0;
+        const w0 = w - W0;
+
+        let c1 = (x0 > y0) ? 1 : 0;
+        let c2 = (x0 > z0) ? 1 : 0;
+        let c3 = (x0 > w0) ? 1 : 0;
+        let c4 = (y0 > z0) ? 1 : 0;
+        let c5 = (y0 > w0) ? 1 : 0;
+        let c6 = (z0 > w0) ? 1 : 0;
+
+        let i1 = c1 + c2 + c3 >= 3 ? 1 : 0;
+        let j1 = (1 - c1) + c4 + c5 >= 3 ? 1 : 0;
+        let k1 = (1 - c2) + (1 - c4) + c6 >= 3 ? 1 : 0;
+        let l1 = (1 - c3) + (1 - c5) + (1 - c6) >= 3 ? 1 : 0;
+
+        let i2 = c1 + c2 + c3 >= 2 ? 1 : 0;
+        let j2 = (1 - c1) + c4 + c5 >= 2 ? 1 : 0;
+        let k2 = (1 - c2) + (1 - c4) + c6 >= 2 ? 1 : 0;
+        let l2 = (1 - c3) + (1 - c5) + (1 - c6) >= 2 ? 1 : 0;
+
+        let i3 = c1 + c2 + c3 >= 1 ? 1 : 0;
+        let j3 = (1 - c1) + c4 + c5 >= 1 ? 1 : 0;
+        let k3 = (1 - c2) + (1 - c4) + c6 >= 1 ? 1 : 0;
+        let l3 = (1 - c3) + (1 - c5) + (1 - c6) >= 1 ? 1 : 0;
+
+        const x1 = x0 - i1 + G4;
+        const y1 = y0 - j1 + G4;
+        const z1 = z0 - k1 + G4;
+        const w1 = w0 - l1 + G4;
+
+        const x2 = x0 - i2 + 2.0 * G4;
+        const y2 = y0 - j2 + 2.0 * G4;
+        const z2 = z0 - k2 + 2.0 * G4;
+        const w2 = w0 - l2 + 2.0 * G4;
+
+        const x3 = x0 - i3 + 3.0 * G4;
+        const y3 = y0 - j3 + 3.0 * G4;
+        const z3 = z0 - k3 + 3.0 * G4;
+        const w3 = w0 - l3 + 3.0 * G4;
+
+        const x4 = x0 - 1.0 + 4.0 * G4;
+        const y4 = y0 - 1.0 + 4.0 * G4;
+        const z4 = z0 - 1.0 + 4.0 * G4;
+        const w4 = w0 - 1.0 + 4.0 * G4;
+
+        const ii = i & 255;
+        const jj = j & 255;
+        const kk = k & 255;
+        const ll = l & 255;
+
+        let n0 = 0, n1 = 0, n2 = 0, n3 = 0, n4 = 0;
+
+        let t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0;
+        if (t0 > 0) {
+          const g = this.grad4[this.perm[ii + this.perm[jj + this.perm[kk + this.perm[ll]]]] & 31];
+          t0 *= t0;
+          n0 = t0 * t0 * (g[0] * x0 + g[1] * y0 + g[2] * z0 + g[3] * w0);
+        }
+
+        let t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1;
+        if (t1 > 0) {
+          const g = this.grad4[this.perm[ii + i1 + this.perm[jj + j1 + this.perm[kk + k1 + this.perm[ll + l1]]]] & 31];
+          t1 *= t1;
+          n1 = t1 * t1 * (g[0] * x1 + g[1] * y1 + g[2] * z1 + g[3] * w1);
+        }
+
+        let t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2;
+        if (t2 > 0) {
+          const g = this.grad4[this.perm[ii + i2 + this.perm[jj + j2 + this.perm[kk + k2 + this.perm[ll + l2]]]] & 31];
+          t2 *= t2;
+          n2 = t2 * t2 * (g[0] * x2 + g[1] * y2 + g[2] * z2 + g[3] * w2);
+        }
+
+        let t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3;
+        if (t3 > 0) {
+          const g = this.grad4[this.perm[ii + i3 + this.perm[jj + j3 + this.perm[kk + k3 + this.perm[ll + l3]]]] & 31];
+          t3 *= t3;
+          n3 = t3 * t3 * (g[0] * x3 + g[1] * y3 + g[2] * z3 + g[3] * w3);
+        }
+
+        let t4 = 0.6 - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4;
+        if (t4 > 0) {
+          const g = this.grad4[this.perm[ii + 1 + this.perm[jj + 1 + this.perm[kk + 1 + this.perm[ll + 1]]]] & 31];
+          t4 *= t4;
+          n4 = t4 * t4 * (g[0] * x4 + g[1] * y4 + g[2] * z4 + g[3] * w4);
+        }
+
+        return 27.0 * (n0 + n1 + n2 + n3 + n4);
+      }
+
+      tileableNoise2D(u, v, radiusX = 1.0, radiusY = 1.0) {
+        const angleX = 2 * Math.PI * u;
+        const angleY = 2 * Math.PI * v;
+        const nx = radiusX * Math.cos(angleX);
+        const ny = radiusX * Math.sin(angleX);
+        const nz = radiusY * Math.cos(angleY);
+        const nw = radiusY * Math.sin(angleY);
+        return this.noise4D(nx, ny, nz, nw);
+      }
+
       fbm(x, y, octaves = 3, persistence = 0.5) {
         let total = 0, freq = 1, amp = 1, maxAmp = 0;
         for (let i = 0; i < octaves; i++) {
@@ -808,7 +1099,6 @@
         return total / maxAmp;
       }
     }
-
     function mulberry32(a) {
       return function() {
         let t = a += 0x6D2B79F5;
@@ -857,7 +1147,20 @@
       enable3D: false, // 3D perspektivní režim
       tilt3D: 35, // Náklon / pitch (0 - 70°)
       viewAngle3D: 90, // Směr pohledu v 3D (0 - 360°)
-      height3D: 90 // 3D zdvih reliéfu (0 - 250 px)
+      height3D: 90, // 3D zdvih reliéfu (0 - 250 px)
+      scaleY3D: 1.0, // Vertikální expanze ve 3D
+
+      // VYPLNĚNÍ ROZLIŠENÍ (100% W × H BEZ PRÁZDNÝCH PRUHŮ)
+      fillCanvas100: true, // Vyplnit 100% šířky i výšky vybraného rozlišení souboru
+      canvasFitMode: 'stretch-100', // 'stretch-100' | 'cover-100'
+      canvasPadding: 0, // Odsazení od okrajů v px (0 = 100% k hraně)
+
+      // NEKONEČNÝ OPAKOVATELNÝ VZOR (SEAMLESS / REPEATABLE)
+      seamlessMode: false, // Aktivace bezešvého opakování vzoru
+      seamlessAxes: 'xy', // 'xy' (obousměrně) | 'x' (pouze vodorovně)
+      previewTiling: false, // Živý náhled 2x2 dlaždic
+      singleTileSvg: '',
+      tiled2x2Svg: ''
     };
 
     const seedHistory = {
@@ -895,8 +1198,12 @@
       viewAngle3DVal: document.getElementById('viewAngle3DVal'),
       height3D: document.getElementById('height3D'),
       height3DVal: document.getElementById('height3DVal'),
+      scaleY3D: document.getElementById('scaleY3D'),
+      scaleY3DVal: document.getElementById('scaleY3DVal'),
+      btnAutofillHeight3D: document.getElementById('btnAutofillHeight3D'),
       badge3D: document.getElementById('badge3D'),
 
+      // Geometrie a styl
       levels: document.getElementById('levels'),
       levelsVal: document.getElementById('levelsVal'),
       scale: document.getElementById('scale'),
@@ -921,6 +1228,8 @@
       bgColorText: document.getElementById('bgColorText'),
       bgColorVal: document.getElementById('bgColorVal'),
       bgColorContainer: document.getElementById('bgColorContainer'),
+
+      // Mřížka
       showGrid: document.getElementById('showGrid'),
       gridOptionsContainer: document.getElementById('gridOptionsContainer'),
       gridSpacing: document.getElementById('gridSpacing'),
@@ -928,11 +1237,45 @@
       gridOpacity: document.getElementById('gridOpacity'),
       gridOpacityVal: document.getElementById('gridOpacityVal'),
       gridStyle: document.getElementById('gridStyle'),
+
+      // Značky vrcholů
       showPeakMarkers: document.getElementById('showPeakMarkers'),
       peakOptionsContainer: document.getElementById('peakOptionsContainer'),
       peakMarkerSize: document.getElementById('peakMarkerSize'),
       peakMarkerSizeVal: document.getElementById('peakMarkerSizeVal'),
       showPeakElevation: document.getElementById('showPeakElevation'),
+
+      // Vyplnění rozlišení plátna
+      fillCanvas100: document.getElementById('fillCanvas100'),
+      headerFillToggle: document.getElementById('headerFillToggle'),
+      pngExportCropBadge: document.getElementById('pngExportCropBadge'),
+      pngRes1x: document.getElementById('pngRes1x'),
+      pngRes2x: document.getElementById('pngRes2x'),
+      pngRes4x: document.getElementById('pngRes4x'),
+      exportResText: document.getElementById('exportResText'),
+      patternCoverageText: document.getElementById('patternCoverageText'),
+      blankBarsText: document.getElementById('blankBarsText'),
+      canvasPadding: document.getElementById('canvasPadding'),
+      canvasPaddingVal: document.getElementById('canvasPaddingVal'),
+      btnModeStretch: document.getElementById('btnModeStretch'),
+      btnModeCover: document.getElementById('btnModeCover'),
+      infoFillBadge: document.getElementById('infoFillBadge'),
+      infoFillText: document.getElementById('infoFillText'),
+
+      // Nekonečný vzor
+      seamlessMode: document.getElementById('seamlessMode'),
+      containerSeamlessOptions: document.getElementById('containerSeamlessOptions'),
+      btnSeamlessAxesXY: document.getElementById('btnSeamlessAxesXY'),
+      btnSeamlessAxesX: document.getElementById('btnSeamlessAxesX'),
+      btnToggleTilingPreview: document.getElementById('btnToggleTilingPreview'),
+      toggleTilingPreviewText: document.getElementById('toggleTilingPreviewText'),
+      btnToolbarTiling: document.getElementById('btnToolbarTiling'),
+      tilingPreviewIcon: document.getElementById('tilingPreviewIcon'),
+      btnCopyCssPattern: document.getElementById('btnCopyCssPattern'),
+      btnExportTiled2x2: document.getElementById('btnExportTiled2x2'),
+      badgeSeamless: document.getElementById('badgeSeamless'),
+
+      // Seed a historie
       inputSeed: document.getElementById('inputSeed'),
       seedVal: document.getElementById('seedVal'),
       btnNewSeed: document.getElementById('btnNewSeed'),
@@ -943,6 +1286,8 @@
       animText: document.getElementById('animText'),
       btnHistoryUndo: document.getElementById('btnHistoryUndo'),
       btnHistoryRedo: document.getElementById('btnHistoryRedo'),
+
+      // Náhled a plátno
       svgContainer: document.getElementById('svgContainer'),
       canvasWrapper: document.getElementById('canvasWrapper'),
       previewViewport: document.getElementById('previewViewport'),
@@ -950,6 +1295,8 @@
       infoPaths: document.getElementById('infoPaths'),
       infoPeaks: document.getElementById('infoPeaks'),
       infoPeaksBadge: document.getElementById('infoPeaksBadge'),
+
+      // Export a zoom
       btnCopySvg: document.getElementById('btnCopySvg'),
       btnCopyPng: document.getElementById('btnCopyPng'),
       btnExportSvg: document.getElementById('btnExportSvg'),
@@ -991,7 +1338,152 @@
 
       let detectedPeaks = [];
 
-      if (appState.mode === 'topo-alpine') {
+      // --- REŽIM NEKONEČNÉHO BEZEŠVÉHO VZORU (SEAMLESS TILE) ---
+      if (appState.seamlessMode) {
+        const isXY = appState.seamlessAxes === 'xy';
+        const baseRadius = appState.scale * 0.42;
+        const warpAmt = appState.domainWarp * 0.18;
+
+        const numPeaks = 5;
+        const seamlessPeaks = [];
+        for (let i = 0; i < numPeaks; i++) {
+          seamlessPeaks.push({
+            u: rng(),
+            v: rng(),
+            weight: 0.55 + 0.45 * rng(),
+            radius: 0.14 + 0.14 * rng()
+          });
+        }
+
+        let minH = 9999, maxH = -9999;
+        for (let r = 0; r < rows; r++) {
+          grid[r] = new Float32Array(cols);
+          const v0 = r / (rows - 1);
+
+          for (let c = 0; c < cols; c++) {
+            const u0 = c / (cols - 1);
+            let u = u0;
+            let v = v0;
+
+            // Bezešvý domain warping
+            if (warpAmt > 0) {
+              if (isXY) {
+                const wx = noiseEngine.tileableNoise2D(u0, v0, baseRadius * 1.3, baseRadius * 1.3) - 0.5;
+                const wy = noiseEngine.tileableNoise2D(u0 + 0.37, v0 + 0.63, baseRadius * 1.3, baseRadius * 1.3) - 0.5;
+                u = (u0 + wx * warpAmt) % 1.0;
+                v = (v0 + wy * warpAmt) % 1.0;
+                if (u < 0) u += 1.0;
+                if (v < 0) v += 1.0;
+              } else {
+                const angleX = 2 * Math.PI * u0;
+                const nx = baseRadius * Math.cos(angleX);
+                const ny = baseRadius * Math.sin(angleX);
+                const wx = noiseEngine.noise4D(nx, ny, v0 * baseRadius, 0) - 0.5;
+                u = (u0 + wx * warpAmt) % 1.0;
+                if (u < 0) u += 1.0;
+              }
+            }
+
+            let val = 0;
+            let freq = 1, amp = 1, maxAmp = 0;
+            const octaves = 4;
+
+            for (let oct = 0; oct < octaves; oct++) {
+              let n;
+              if (isXY) {
+                const rx = baseRadius * freq;
+                const ry = baseRadius * freq;
+                n = (noiseEngine.tileableNoise2D(u, v, rx, ry) + 1.0) * 0.5;
+              } else {
+                const angleX = 2 * Math.PI * u;
+                const nx = (baseRadius * freq) * Math.cos(angleX);
+                const ny = (baseRadius * freq) * Math.sin(angleX);
+                n = (noiseEngine.noise4D(nx, ny, v * (baseRadius * freq), 0) + 1.0) * 0.5;
+              }
+
+              if (appState.mode === 'ridged-canyons') {
+                n = 1.0 - Math.abs(n * 2.0 - 1.0);
+                n = n * n;
+              } else if (appState.mode === 'turbulent-fluid') {
+                n = Math.sin(n * Math.PI * 2.2) * 0.5 + 0.5;
+              }
+
+              val += n * amp;
+              maxAmp += amp;
+              amp *= 0.5;
+              freq *= 2.0;
+            }
+
+            let finalVal = val / maxAmp;
+
+            // Bezešvý příspěvek vrcholů (toroidální vzdálenost)
+            if (appState.mode === 'topo-alpine' || appState.mode === 'concentric-islands') {
+              let peakContribution = 0;
+              for (const sp of seamlessPeaks) {
+                let du = Math.abs(u - sp.u);
+                if (du > 0.5) du = 1.0 - du;
+                let dv = Math.abs(v - sp.v);
+                if (isXY && dv > 0.5) dv = 1.0 - dv;
+                const dist = Math.sqrt(du * du + dv * dv);
+                if (dist < sp.radius) {
+                  const t = 1.0 - dist / sp.radius;
+                  peakContribution += sp.weight * (t * t * (3 - 2 * t));
+                }
+              }
+              finalVal = finalVal * 0.65 + peakContribution * 0.35;
+            }
+
+            // Organické zóny klidu
+            if (appState.emptySpaceMode === 'calm-zones' && appState.emptySpaceAmount > 0.05) {
+              const calm = isXY 
+                ? (noiseEngine.tileableNoise2D(u, v, baseRadius * 0.5, baseRadius * 0.5) + 1.0) * 0.5
+                : (noiseEngine.noise4D(Math.cos(2*Math.PI*u), Math.sin(2*Math.PI*u), v, 0) + 1.0) * 0.5;
+              const calmThresh = appState.emptySpaceAmount * 0.75;
+              if (calm < calmThresh) {
+                const fade = Math.max(0, calm / calmThresh);
+                finalVal *= fade * fade;
+              }
+            }
+
+            grid[r][c] = finalVal;
+            if (finalVal < minH) minH = finalVal;
+            if (finalVal > maxH) maxH = finalVal;
+          }
+
+          // Striktní rovnost pro osu X
+          grid[r][cols - 1] = grid[r][0];
+        }
+
+        // Striktní rovnost pro osu Y
+        if (isXY) {
+          for (let c = 0; c < cols; c++) {
+            grid[rows - 1][c] = grid[0][c];
+          }
+        }
+
+        // Normalizace výškového pole
+        const range = Math.max(0.001, maxH - minH);
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            grid[r][c] = (grid[r][c] - minH) / range;
+          }
+        }
+
+        // Značky vrcholů
+        for (const sp of seamlessPeaks) {
+          const elev = Math.round(750 + sp.weight * 1450);
+          detectedPeaks.push({
+            x: sp.u * W,
+            y: sp.v * H,
+            rawVal: sp.weight,
+            elevation: elev
+          });
+        }
+
+        return { grid, detectedPeaks };
+      }
+
+            if (appState.mode === 'topo-alpine') {
         const numPeaks = 7;
         const peaks = [];
         for (let i = 0; i < numPeaks; i++) {
@@ -1177,88 +1669,6 @@
           }
         }
         detectedPeaks = findProminentPeaks(grid, cols, rows, W, H, 0.75);
-
-      } else if (appState.mode === 'ultra-smooth') {
-        // Ultra hladké organické křivky (Liquid Blobs / Metaballs podle Vzoru 3)
-        // Spojité nízkofrekvenční pole s jemnou laminární deformací
-        const numBlobs = 6;
-        const blobs = [];
-        for (let i = 0; i < numBlobs; i++) {
-          blobs.push({
-            x: W * (0.15 + 0.70 * rng()),
-            y: H * (0.15 + 0.70 * rng()),
-            rx: Math.min(W, H) * (0.22 + 0.32 * rng()),
-            ry: Math.min(W, H) * (0.22 + 0.32 * rng()),
-            angle: rng() * Math.PI,
-            weight: 0.65 + 0.55 * rng()
-          });
-        }
-
-        let minH = 9999, maxH = -9999;
-        for (let r = 0; r < rows; r++) {
-          grid[r] = new Float32Array(cols);
-          const py = r * (H / (rows - 1));
-          for (let c = 0; c < cols; c++) {
-            const px = c * (W / (cols - 1));
-
-            const dxP = px - cx;
-            const dyP = py - cy;
-            const rotPx = cx + dxP * cosP - dyP * sinP;
-            const rotPy = cy + dxP * sinP + dyP * cosP;
-
-            // Velmi jemné velkoformátové laminární proudění
-            const sx = (rotPx + vOffset * 10) * baseScale * 0.7;
-            const sy = (rotPy + vOffset * 10) * baseScale * 0.7;
-            
-            const warpX = (noiseEngine.noise2D(sx + 1.7, sy + 3.2) - 0.5) * (warpAmount * 0.05);
-            const warpY = (noiseEngine.noise2D(sx + 5.1, sy + 8.9) - 0.5) * (warpAmount * 0.05);
-            
-            const qx = rotPx + warpX * 45;
-            const qy = rotPy + warpY * 45;
-
-            // Nízkofrekvenční spojitý šum (pouze hladké velkoformátové vlny bez mikro-šumu)
-            const n1 = (noiseEngine.noise2D((qx + vOffset * 12) * baseScale * 0.65, (qy + vOffset * 12) * baseScale * 0.65) + 1) * 0.5;
-            const n2 = (noiseEngine.noise2D((qx * 1.8 + 20) * baseScale * 0.65, (qy * 1.8 + 30) * baseScale * 0.65) + 1) * 0.5;
-            const smoothNoise = n1 * 0.75 + n2 * 0.25;
-
-            // Metaball potenciál pro dokonalé kapky, ostrovy a zálivy
-            let blobSum = 0;
-            for (const b of blobs) {
-              const dx = qx - b.x;
-              const dy = qy - b.y;
-              const cos = Math.cos(b.angle);
-              const sin = Math.sin(b.angle);
-              const rx = dx * cos + dy * sin;
-              const ry = -dx * sin + dy * cos;
-              const d2 = (rx / b.rx) ** 2 + (ry / b.ry) ** 2;
-              blobSum += b.weight * Math.exp(-d2 * 1.8);
-            }
-
-            let val = blobSum * 0.45 + smoothNoise * 0.55;
-
-            if (appState.emptySpaceMode === 'calm-zones' && appState.emptySpaceAmount > 0.05) {
-              const calm = noiseEngine.noise2D(rotPx * baseScale * 0.4 + 15, rotPy * baseScale * 0.4 + 25);
-              const calmThreshold = appState.emptySpaceAmount * 0.85;
-              if (calm < calmThreshold) {
-                const fade = Math.max(0, calm / calmThreshold);
-                val *= fade * fade;
-              }
-            }
-
-            grid[r][c] = val;
-            if (val < minH) minH = val;
-            if (val > maxH) maxH = val;
-          }
-        }
-
-        const range = maxH - minH || 1;
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            grid[r][c] = (grid[r][c] - minH) / range;
-          }
-        }
-
-        detectedPeaks = findProminentPeaks(grid, cols, rows, W, H, 0.70);
       }
 
       return { grid, detectedPeaks };
@@ -1453,6 +1863,7 @@
       const sinTilt = Math.sin(tiltRad);
       const cosView = Math.cos(viewAngleRad);
       const sinView = Math.sin(viewAngleRad);
+      const scaleY = appState.scaleY3D || 1.0;
 
       // Výškový posun podél 3D směru
       const ex = cosView * (Hlevel * appState.height3D * sinTilt);
@@ -1462,7 +1873,7 @@
       for (const obj of paths) {
         const pts = obj.points.map(p => {
           const dx = p[0] - cx;
-          const dy = (p[1] - cy) * cosTilt;
+          const dy = (p[1] - cy) * cosTilt * scaleY;
           return [
             cx + dx + ex,
             cy + dy + ey
@@ -1474,49 +1885,13 @@
       return transformed;
     }
 
-    // Chaikinův algoritmus pro ořezávání a vyhlazování polygonálních hran
-    function chaikinSmooth(pts, isClosed, iterations = 2) {
-      let current = pts;
-      for (let it = 0; it < iterations; it++) {
-        if (current.length < 3) break;
-        const next = [];
-        const n = current.length;
-        if (isClosed) {
-          for (let i = 0; i < n; i++) {
-            const p0 = current[i];
-            const p1 = current[(i + 1) % n];
-            next.push([0.75 * p0[0] + 0.25 * p1[0], 0.75 * p0[1] + 0.25 * p1[1]]);
-            next.push([0.25 * p0[0] + 0.75 * p1[0], 0.25 * p0[1] + 0.75 * p1[1]]);
-          }
-        } else {
-          next.push(current[0]);
-          for (let i = 0; i < n - 1; i++) {
-            const p0 = current[i];
-            const p1 = current[i + 1];
-            next.push([0.75 * p0[0] + 0.25 * p1[0], 0.75 * p0[1] + 0.75 * p1[1]]);
-            next.push([0.25 * p0[0] + 0.75 * p1[0], 0.25 * p0[1] + 0.75 * p1[1]]);
-          }
-          next.push(current[n - 1]);
-        }
-        current = next;
-      }
-      return current;
-    }
-
     function smoothPathsToSvg(pathObjs, smoothnessMode) {
       if (!pathObjs || pathObjs.length === 0) return '';
       let d = '';
 
       for (const obj of pathObjs) {
-        let pts = obj.points;
+        const pts = obj.points;
         const isClosed = obj.isClosed;
-        if (!pts || pts.length < 2) continue;
-
-        // Režim 3: Full Hladké křivky (Chaikin vyhlazení rohů před Bézierem)
-        if (smoothnessMode === 3) {
-          pts = chaikinSmooth(pts, isClosed, 2);
-        }
-
         const n = pts.length;
         if (n < 2) continue;
 
@@ -1581,6 +1956,22 @@
     /**
      * VYKRESLENÍ A GENEROVÁNÍ SVG (POUZE ČISTÉ KŘIVKY, PRÁZDNÁ MÍSTA & 3D EFEKT)
      */
+    function updatePngDropdownLabels() {
+      const W = appState.width;
+      const H = appState.height;
+
+      if (UI.pngRes1x) UI.pngRes1x.textContent = `${W} × ${H}`;
+      if (UI.pngRes2x) UI.pngRes2x.textContent = `${W * 2} × ${H * 2}`;
+      if (UI.pngRes4x) UI.pngRes4x.textContent = `${W * 4} × ${H * 4}`;
+      if (UI.exportResText) UI.exportResText.textContent = `${W} × ${H} px`;
+      if (UI.pngExportCropBadge) {
+        UI.pngExportCropBadge.textContent = appState.fillCanvas100 ? '100% W × H' : 'Přirozené';
+      }
+    }
+
+    /**
+     * VYKRESLENÍ A GENEROVÁNÍ SVG (POUZE ČISTÉ KŘIVKY, PRÁZDNÁ MÍSTA, 3D & 100% VYPLNĚNÍ ROZLIŠENÍ)
+     */
     function render() {
       noiseEngine.setSeed(appState.seed);
 
@@ -1598,28 +1989,23 @@
       const { grid, detectedPeaks } = computeHeightField(cols, rows, W, H);
 
       let totalPathCount = 0;
-      let standardPathsData = '';
-      let indexPathsData = '';
+      let allLevels = [];
 
       const numLevels = appState.levels;
       const indexFreq = appState.indexLineFreq;
       const emptyAmt = appState.emptySpaceAmount;
 
       for (let l = 1; l <= numLevels; l++) {
-        // Distribuce prahů s ohledem na prázdná místa
         let threshold;
         const progress = l / (numLevels + 1);
 
         if (appState.emptySpaceMode === 'valleys') {
-          // Prázdná místa v údolích: vrstevnice začínají až nad spodní rovinou
           const floor = emptyAmt * 0.78;
           threshold = floor + progress * (0.95 - floor);
         } else if (appState.emptySpaceMode === 'plateaus') {
-          // Prázdná místa na náhorních plošinách: vrstevnice končí pod horním stropem
           const ceiling = 0.95 - emptyAmt * 0.75;
           threshold = 0.05 + progress * (ceiling - 0.05);
         } else {
-          // Organické zóny klidu
           threshold = 0.05 + progress * 0.90;
         }
 
@@ -1628,31 +2014,133 @@
         if (segments.length > 0) {
           let paths = assemblePathsFast(segments, Math.max(cellW, cellH) * 0.7);
 
-          // Aplikace 3D perspektivy a výškového zdvihu
           if (appState.enable3D) {
             paths = apply3DTransform(paths, threshold, W, H);
           }
 
           totalPathCount += paths.length;
-          const d = smoothPathsToSvg(paths, appState.smoothness);
-
-          if (d) {
-            const isIndex = (indexFreq > 0) && (l % indexFreq === 0);
-            if (isIndex) {
-              indexPathsData += `${d} `;
-            } else {
-              standardPathsData += `${d} `;
-            }
-          }
+          const isIndex = (indexFreq > 0) && (l % indexFreq === 0);
+          allLevels.push({ paths, isIndex });
         }
       }
 
-      // 1. Pozadí
-      const bgMarkup = appState.transparentBg 
-        ? '' 
-        : `<rect width="${W}" height="${H}" fill="${appState.bgColor}" />\n`;
+      // 3D transformace vrcholů
+      let detectedPeaksTransformed = [];
+      if (appState.showPeakMarkers && detectedPeaks.length > 0) {
+        const tiltRad = (appState.tilt3D * Math.PI) / 180;
+        const viewAngleRad = (appState.viewAngle3D * Math.PI) / 180;
+        const cosTilt = Math.cos(tiltRad);
+        const sinTilt = Math.sin(tiltRad);
+        const cosView = Math.cos(viewAngleRad);
+        const sinView = Math.sin(viewAngleRad);
+        const scaleY = appState.scaleY3D || 1.0;
 
-      // 2. Kartografická souřadnicová mřížka
+        for (const p of detectedPeaks) {
+          let posX = p.x;
+          let posY = p.y;
+          if (appState.enable3D) {
+            const dx = p.x - cx;
+            const dy = (p.y - cy) * cosTilt * scaleY;
+            const normH = p.rawVal || 0.8;
+            const ex = cosView * (normH * appState.height3D * sinTilt);
+            const ey = -sinView * (normH * appState.height3D);
+            posX = cx + dx + ex;
+            posY = cy + dy + ey;
+          }
+          detectedPeaksTransformed.push({
+            x: posX,
+            y: posY,
+            elevation: p.elevation
+          });
+        }
+      }
+
+      // Výpočet skutečných mezí všech křivek a vrcholů
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const lvl of allLevels) {
+        for (const obj of lvl.paths) {
+          for (const pt of obj.points) {
+            if (pt[0] < minX) minX = pt[0];
+            if (pt[0] > maxX) maxX = pt[0];
+            if (pt[1] < minY) minY = pt[1];
+            if (pt[1] > maxY) maxY = pt[1];
+          }
+        }
+      }
+      for (const p of detectedPeaksTransformed) {
+        if (p.x < minX) minX = p.x;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.y > maxY) maxY = p.y;
+      }
+
+      if (minX === Infinity) {
+        minX = 0; minY = 0; maxX = W; maxY = H;
+      }
+
+      // NORMALIZACE NA 100% ŠÍŘKY I VÝŠKY ZVOLENÉHO ROZLIŠENÍ (W × H)
+      const spanX = maxX - minX;
+      const spanY = maxY - minY;
+      const pad = Math.max(0, appState.canvasPadding || 0);
+
+      if (!appState.seamlessMode && appState.fillCanvas100 && spanX > 0 && spanY > 0) {
+        const targetW = W - 2 * pad;
+        const targetH = H - 2 * pad;
+
+        if (appState.canvasFitMode === 'cover-100') {
+          const scale = Math.max(targetW / spanX, targetH / spanY);
+          const midX = (minX + maxX) * 0.5;
+          const midY = (minY + maxY) * 0.5;
+          for (const lvl of allLevels) {
+            for (const obj of lvl.paths) {
+              for (const pt of obj.points) {
+                pt[0] = cx + (pt[0] - midX) * scale;
+                pt[1] = cy + (pt[1] - midY) * scale;
+              }
+            }
+          }
+          for (const p of detectedPeaksTransformed) {
+            p.x = cx + (p.x - midX) * scale;
+            p.y = cy + (p.y - midY) * scale;
+          }
+        } else {
+          // stretch-100: Přesně 100% šířky i 100% výšky daného rozlišení (např. 1920 × 1080)
+          for (const lvl of allLevels) {
+            for (const obj of lvl.paths) {
+              for (const pt of obj.points) {
+                pt[0] = pad + ((pt[0] - minX) / spanX) * targetW;
+                pt[1] = pad + ((pt[1] - minY) / spanY) * targetH;
+              }
+            }
+          }
+          for (const p of detectedPeaksTransformed) {
+            p.x = pad + ((p.x - minX) / spanX) * targetW;
+            p.y = pad + ((p.y - minY) / spanY) * targetH;
+          }
+        }
+
+        if (UI.patternCoverageText) UI.patternCoverageText.textContent = '100% šířka × 100% výška';
+        if (UI.blankBarsText) UI.blankBarsText.textContent = '0 px (Žádné prázdné pruhy)';
+      } else if (appState.seamlessMode) {
+        if (UI.patternCoverageText) UI.patternCoverageText.textContent = appState.seamlessAxes === 'xy' ? '100% bezešvý (X & Y)' : '100% bezešvý (Vodorovně X)';
+        if (UI.blankBarsText) UI.blankBarsText.textContent = '0 px (Plynulý spoj na okrajích)';
+      } else {
+        if (UI.patternCoverageText) UI.patternCoverageText.textContent = `${Math.round((spanX/W)*100)}% šířka × ${Math.round((spanY/H)*100)}% výška`;
+        if (UI.blankBarsText) UI.blankBarsText.textContent = `Nahoře: ${Math.max(0, Math.round(minY))} px, Dole: ${Math.max(0, Math.round(H - maxY))} px`;
+      }
+
+      // Vyhlazení křivek po normalizaci
+      let standardPathsData = '';
+      let indexPathsData = '';
+      for (const lvl of allLevels) {
+        const d = smoothPathsToSvg(lvl.paths, appState.smoothness);
+        if (d) {
+          if (lvl.isIndex) indexPathsData += `${d} `;
+          else standardPathsData += `${d} `;
+        }
+      }
+
+      // Kartografická souřadnicová mřížka
       let gridMarkup = '';
       if (appState.showGrid) {
         const spacing = appState.gridSpacing;
@@ -1660,29 +2148,11 @@
         const gridColor = appState.strokeColor;
         let gridLines = '';
 
-        if (appState.enable3D) {
-          // V 3D režimu je mřížka nakloněná na základní rovině (H = 0)
-          const tiltRad = (appState.tilt3D * Math.PI) / 180;
-          const cosTilt = Math.cos(tiltRad);
-
-          for (let x = spacing; x < W; x += spacing) {
-            const x0 = x;
-            const y0 = cy + (0 - cy) * cosTilt;
-            const y1 = cy + (H - cy) * cosTilt;
-            gridLines += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x0.toFixed(1)}" y2="${y1.toFixed(1)}" />\n`;
-          }
-          for (let y = spacing; y < H; y += spacing) {
-            const yRot = cy + (y - cy) * cosTilt;
-            gridLines += `<line x1="0" y1="${yRot.toFixed(1)}" x2="${W}" y2="${yRot.toFixed(1)}" />\n`;
-          }
-        } else {
-          // Běžná 2D mřížka
-          for (let x = spacing; x < W; x += spacing) {
-            gridLines += `<line x1="${x}" y1="0" x2="${x}" y2="${H}" />\n`;
-          }
-          for (let y = spacing; y < H; y += spacing) {
-            gridLines += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" />\n`;
-          }
+        for (let x = spacing; x < W; x += spacing) {
+          gridLines += `<line x1="${x}" y1="0" x2="${x}" y2="${H}" />\n`;
+        }
+        for (let y = spacing; y < H; y += spacing) {
+          gridLines += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" />\n`;
         }
 
         gridMarkup = `
@@ -1691,38 +2161,17 @@
   </g>`;
       }
 
-      // 3. Značky vrcholů (+) podle Vzoru 1
+      // Značky vrcholů (+) podle Vzoru 1
       let peaksMarkup = '';
-      if (appState.showPeakMarkers && detectedPeaks.length > 0) {
+      if (appState.showPeakMarkers && detectedPeaksTransformed.length > 0) {
         const s = appState.peakMarkerSize * 0.5;
         let peakShapes = '';
         let peakLabels = '';
 
-        const tiltRad = (appState.tilt3D * Math.PI) / 180;
-        const viewAngleRad = (appState.viewAngle3D * Math.PI) / 180;
-        const cosTilt = Math.cos(tiltRad);
-        const sinTilt = Math.sin(tiltRad);
-        const cosView = Math.cos(viewAngleRad);
-        const sinView = Math.sin(viewAngleRad);
-
-        for (const p of detectedPeaks) {
-          let posX = p.x;
-          let posY = p.y;
-
-          // V 3D režimu posuneme vrchol odpovídajícím způsobem nahoru
-          if (appState.enable3D) {
-            const dx = p.x - cx;
-            const dy = (p.y - cy) * cosTilt;
-            const normH = p.rawVal || 0.8;
-            const ex = cosView * (normH * appState.height3D * sinTilt);
-            const ey = -sinView * (normH * appState.height3D);
-            posX = cx + dx + ex;
-            posY = cy + dy + ey;
-          }
-
-          peakShapes += `M ${(posX - s).toFixed(1)} ${posY.toFixed(1)} L ${(posX + s).toFixed(1)} ${posY.toFixed(1)} M ${posX.toFixed(1)} ${(posY - s).toFixed(1)} L ${posX.toFixed(1)} ${(posY + s).toFixed(1)} `;
+        for (const p of detectedPeaksTransformed) {
+          peakShapes += `M ${(p.x - s).toFixed(1)} ${p.y.toFixed(1)} L ${(p.x + s).toFixed(1)} ${p.y.toFixed(1)} M ${p.x.toFixed(1)} ${(p.y - s).toFixed(1)} L ${p.x.toFixed(1)} ${(p.y + s).toFixed(1)} `;
           if (appState.showPeakElevation) {
-            peakLabels += `<text x="${(posX + s + 3).toFixed(1)}" y="${(posY + 3.5).toFixed(1)}" font-family="monospace" font-size="9" fill="${appState.strokeColor}" opacity="0.8">+${p.elevation}m</text>\n`;
+            peakLabels += `<text x="${(p.x + s + 3).toFixed(1)}" y="${(p.y + 3.5).toFixed(1)}" font-family="monospace" font-size="9" fill="${appState.strokeColor}" opacity="0.8">+${p.elevation}m</text>\n`;
           }
         }
 
@@ -1733,13 +2182,19 @@
   </g>`;
       }
 
+      // Pozadí plátna
+      const bgMarkup = appState.transparentBg 
+        ? '' 
+        : `<rect width="${W}" height="${H}" fill="${appState.bgColor}" />\n`;
+
       const strokeRgba = hexToRgb(appState.strokeColor, appState.strokeOpacity);
       const indexOpacity = Math.min(1.0, appState.strokeOpacity + 0.20);
       const indexStrokeRgba = hexToRgb(appState.strokeColor, indexOpacity);
       const indexWidth = (appState.strokeWidth * appState.indexLineMultiplier).toFixed(2);
 
+      // SVG DOKUMENT: PŘESNÉ ROZLIŠENÍ W × H, VZOR NA 100% PLÁTNA
       const svgDoc = 
-`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" height="100%">
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
   <defs>
     <style>
       .topo-minor {
@@ -1769,21 +2224,73 @@
   ${peaksMarkup}
 </svg>`;
 
-      appState.svgOutput = svgDoc;
-      UI.svgContainer.innerHTML = svgDoc;
+      appState.singleTileSvg = svgDoc;
+
+      // 2x2 TILING NÁHLED SPOJENÍ DLAŽDIC
+      if (appState.previewTiling && appState.seamlessMode) {
+        const svg2x2 = 
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${2*W} ${2*H}" width="100%" height="100%">
+  <defs>
+    <style>
+      .topo-minor {
+        fill: none;
+        stroke: ${strokeRgba};
+        stroke-width: ${appState.strokeWidth}px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .topo-major {
+        fill: none;
+        stroke: ${indexStrokeRgba};
+        stroke-width: ${indexWidth}px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+    <g id="seamless-single-tile">
+      ${bgMarkup}
+      ${gridMarkup}
+      <g class="topo-minor"><path d="${standardPathsData.trim()}" /></g>
+      <g class="topo-major"><path d="${indexPathsData.trim()}" /></g>
+      ${peaksMarkup}
+    </g>
+  </defs>
+  <use href="#seamless-single-tile" x="0" y="0" />
+  <use href="#seamless-single-tile" x="${W}" y="0" />
+  <use href="#seamless-single-tile" x="0" y="${H}" />
+  <use href="#seamless-single-tile" x="${W}" y="${H}" />
+  <!-- Dělící vodící linie spojů -->
+  <line x1="${W}" y1="0" x2="${W}" y2="${2*H}" stroke="#10b981" stroke-width="1.2" stroke-dasharray="6 6" opacity="0.45" pointer-events="none" />
+  <line x1="0" y1="${H}" x2="${2*W}" y2="${H}" stroke="#10b981" stroke-width="1.2" stroke-dasharray="6 6" opacity="0.45" pointer-events="none" />
+  <rect x="${W - 90}" y="${H - 12}" width="180" height="24" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1" opacity="0.92" pointer-events="none" />
+  <text x="${W}" y="${H + 4}" fill="#34d399" font-size="11" font-family="monospace" font-weight="bold" text-anchor="middle" pointer-events="none">◄ Bezešvý spoj 2×2 ►</text>
+</svg>`;
+        appState.tiled2x2Svg = svg2x2;
+        appState.svgOutput = svgDoc;
+        UI.svgContainer.innerHTML = svg2x2;
+      } else {
+        appState.tiled2x2Svg = '';
+        appState.svgOutput = svgDoc;
+        UI.svgContainer.innerHTML = svgDoc;
+      }
 
       UI.infoDim.textContent = `${W} × ${H} px`;
       UI.infoPaths.textContent = `${totalPathCount} křivek`;
       UI.infoPeaks.textContent = `${detectedPeaks.length} vrcholů`;
       UI.infoPeaksBadge.style.display = appState.showPeakMarkers ? 'flex' : 'none';
       UI.badge3D.style.display = appState.enable3D ? 'flex' : 'none';
+      if (UI.badgeSeamless) {
+        UI.badgeSeamless.style.display = appState.seamlessMode ? 'flex' : 'none';
+      }
 
+      updatePngDropdownLabels();
       updateCanvasSize();
     }
 
     function updateCanvasSize() {
-      const W = appState.width;
-      const H = appState.height;
+      const isTiling = appState.previewTiling && appState.seamlessMode;
+      const W = isTiling ? appState.width * 2 : appState.width;
+      const H = isTiling ? appState.height * 2 : appState.height;
 
       const pad = 48;
       const availW = Math.max(120, UI.previewViewport.clientWidth - pad);
@@ -1845,6 +2352,10 @@
         tilt3D: 35,
         viewAngle3D: 90,
         height3D: 90,
+        scaleY3D: 1.0,
+        fillCanvas100: true,
+        canvasFitMode: 'stretch-100',
+        canvasPadding: 0,
         indexLineFreq: 5,
         transparentBg: false,
         showGrid: true,
@@ -1872,183 +2383,58 @@
         tilt3D: 35,
         viewAngle3D: 90,
         height3D: 90,
+        scaleY3D: 1.0,
+        fillCanvas100: true,
+        canvasFitMode: 'stretch-100',
+        canvasPadding: 0,
         indexLineFreq: 4,
         transparentBg: false,
         showGrid: true,
-        gridSpacing: 110,
-        gridOpacity: 0.35,
-        gridStyle: '4 4',
-        showPeakMarkers: false,
-        peakMarkerSize: 12,
-        showPeakElevation: false
-      },
-      'liquid-violet': {
-        mode: 'ultra-smooth',
-        strokeColor: '#8B5CF6',
-        strokeWidth: 1.5,
-        indexLineMultiplier: 1.0,
-        strokeOpacity: 0.95,
-        bgColor: '#1F222E',
-        levels: 7,
-        scale: 1.5,
-        domainWarp: 0.35,
-        smoothness: 3,
-        patternAngle: 0,
-        emptySpaceAmount: 0.30,
-        emptySpaceMode: 'valleys',
-        enable3D: false,
-        tilt3D: 35,
-        viewAngle3D: 90,
-        height3D: 90,
-        indexLineFreq: 0,
-        transparentBg: false,
-        showGrid: false,
         gridSpacing: 100,
-        gridOpacity: 0.25,
-        gridStyle: '4 4',
+        gridOpacity: 0.40,
+        gridStyle: '3 6',
         showPeakMarkers: false,
         peakMarkerSize: 12,
         showPeakElevation: false
       },
-      '3d-alpine': {
-        mode: 'topo-alpine',
-        strokeColor: '#38BDF8',
-        strokeWidth: 1.2,
+      'satellite-contours': {
+        mode: 'concentric-islands',
+        strokeColor: '#34D399',
+        strokeWidth: 1.3,
         indexLineMultiplier: 2.2,
         strokeOpacity: 0.90,
-        bgColor: '#090A0F',
-        levels: 24,
-        scale: 2.8,
-        domainWarp: 0.45,
-        patternAngle: 0,
+        bgColor: '#061E16',
+        levels: 26,
+        scale: 3.2,
+        domainWarp: 0.40,
+        patternAngle: 45,
         emptySpaceAmount: 0.30,
         emptySpaceMode: 'valleys',
-        enable3D: true,
-        tilt3D: 40,
-        viewAngle3D: 90,
-        height3D: 100,
-        indexLineFreq: 4,
-        transparentBg: false,
-        showGrid: true,
-        gridSpacing: 100,
-        gridOpacity: 0.30,
-        gridStyle: '4 4',
-        showPeakMarkers: true,
-        peakMarkerSize: 14,
-        showPeakElevation: true
-      },
-      '3d-cyber': {
-        mode: 'turbulent-fluid',
-        strokeColor: '#C084FC',
-        strokeWidth: 1.4,
-        indexLineMultiplier: 2.0,
-        strokeOpacity: 0.95,
-        bgColor: '#06030F',
-        levels: 22,
-        scale: 2.5,
-        domainWarp: 0.60,
-        patternAngle: 15,
-        emptySpaceAmount: 0.20,
-        emptySpaceMode: 'valleys',
-        enable3D: true,
-        tilt3D: 52,
-        viewAngle3D: 80,
-        height3D: 130,
-        indexLineFreq: 4,
-        transparentBg: false,
-        showGrid: true,
-        gridSpacing: 90,
-        gridOpacity: 0.30,
-        gridStyle: '2 4',
-        showPeakMarkers: false,
-        peakMarkerSize: 12,
-        showPeakElevation: false
-      },
-      'dark-minimal': {
-        mode: 'topo-alpine',
-        strokeColor: '#38BDF8',
-        strokeWidth: 1.2,
-        indexLineMultiplier: 2.2,
-        strokeOpacity: 0.75,
-        bgColor: '#090A0F',
-        levels: 22,
-        scale: 3.2,
-        domainWarp: 0.45,
-        patternAngle: 0,
-        emptySpaceAmount: 0.25,
-        emptySpaceMode: 'valleys',
         enable3D: false,
         tilt3D: 35,
         viewAngle3D: 90,
         height3D: 90,
-        indexLineFreq: 5,
-        transparentBg: false,
-        showGrid: false,
-        showPeakMarkers: true,
-        peakMarkerSize: 12,
-        showPeakElevation: false
-      },
-      'swiss-topo': {
-        mode: 'topo-alpine',
-        strokeColor: '#92400E',
-        strokeWidth: 1.2,
-        indexLineMultiplier: 2.2,
-        strokeOpacity: 0.80,
-        bgColor: '#FDFCF7',
-        levels: 26,
-        scale: 3.0,
-        domainWarp: 0.40,
-        patternAngle: 0,
-        emptySpaceAmount: 0.20,
-        emptySpaceMode: 'valleys',
-        enable3D: false,
-        tilt3D: 35,
-        viewAngle3D: 90,
-        height3D: 90,
-        indexLineFreq: 5,
+        scaleY3D: 1.0,
+        fillCanvas100: true,
+        canvasFitMode: 'stretch-100',
+        canvasPadding: 0,
+        indexLineFreq: 6,
         transparentBg: false,
         showGrid: true,
         gridSpacing: 140,
-        gridOpacity: 0.25,
-        gridStyle: '8 6',
+        gridOpacity: 0.30,
+        gridStyle: 'none',
         showPeakMarkers: true,
         peakMarkerSize: 14,
         showPeakElevation: true
       },
-      'emerald-wilderness': {
-        mode: 'topo-alpine',
-        strokeColor: '#34D399',
+      'canyon-sunset': {
+        mode: 'ridged-canyons',
+        strokeColor: '#F97316',
         strokeWidth: 1.2,
-        indexLineMultiplier: 2.0,
+        indexLineMultiplier: 2.4,
         strokeOpacity: 0.85,
-        bgColor: '#061A14',
-        levels: 22,
-        scale: 2.8,
-        domainWarp: 0.50,
-        patternAngle: 0,
-        emptySpaceAmount: 0.30,
-        emptySpaceMode: 'valleys',
-        enable3D: false,
-        tilt3D: 35,
-        viewAngle3D: 90,
-        height3D: 90,
-        indexLineFreq: 5,
-        transparentBg: false,
-        showGrid: true,
-        gridSpacing: 120,
-        gridOpacity: 0.25,
-        gridStyle: '4 4',
-        showPeakMarkers: true,
-        peakMarkerSize: 12,
-        showPeakElevation: false
-      },
-      'sepia-paper': {
-        mode: 'topo-alpine',
-        strokeColor: '#5A3E2B',
-        strokeWidth: 1.2,
-        indexLineMultiplier: 2.1,
-        strokeOpacity: 0.80,
-        bgColor: '#F5EEDB',
+        bgColor: '#1A0E0A',
         levels: 24,
         scale: 2.8,
         domainWarp: 0.45,
@@ -2059,6 +2445,10 @@
         tilt3D: 35,
         viewAngle3D: 90,
         height3D: 90,
+        scaleY3D: 1.0,
+        fillCanvas100: true,
+        canvasFitMode: 'stretch-100',
+        canvasPadding: 0,
         indexLineFreq: 5,
         transparentBg: false,
         showGrid: true,
@@ -2086,6 +2476,10 @@
         tilt3D: 35,
         viewAngle3D: 90,
         height3D: 90,
+        scaleY3D: 1.0,
+        fillCanvas100: true,
+        canvasFitMode: 'stretch-100',
+        canvasPadding: 0,
         indexLineFreq: 4,
         transparentBg: false,
         showGrid: true,
@@ -2113,8 +2507,45 @@
         tilt3D: 35,
         viewAngle3D: 90,
         height3D: 90,
+        scaleY3D: 1.0,
+        fillCanvas100: true,
+        canvasFitMode: 'stretch-100',
+        canvasPadding: 0,
         indexLineFreq: 5,
         transparentBg: true,
+        showGrid: false,
+        showPeakMarkers: true,
+        peakMarkerSize: 12,
+        showPeakElevation: false,
+        seamlessMode: false,
+        previewTiling: false
+      },
+      'seamless-matrix': {
+        mode: 'topo-alpine',
+        strokeColor: '#34D399',
+        strokeWidth: 1.2,
+        indexLineMultiplier: 2.2,
+        strokeOpacity: 0.90,
+        bgColor: '#061712',
+        levels: 24,
+        scale: 2.8,
+        domainWarp: 0.40,
+        patternAngle: 0,
+        emptySpaceAmount: 0.20,
+        emptySpaceMode: 'valleys',
+        enable3D: false,
+        tilt3D: 35,
+        viewAngle3D: 90,
+        height3D: 90,
+        scaleY3D: 1.0,
+        fillCanvas100: false,
+        canvasFitMode: 'stretch-100',
+        canvasPadding: 0,
+        seamlessMode: true,
+        seamlessAxes: 'xy',
+        previewTiling: false,
+        indexLineFreq: 5,
+        transparentBg: false,
         showGrid: false,
         showPeakMarkers: true,
         peakMarkerSize: 12,
@@ -2150,11 +2581,6 @@
       UI.indexLineVal.textContent = appState.indexLineFreq === 0 ? 'Vypnuto' : `Každou ${appState.indexLineFreq}. linii`;
       UI.transparentBg.checked = appState.transparentBg;
 
-      // Vyhlazení křivek
-      UI.smoothness.value = appState.smoothness !== undefined ? appState.smoothness : 2;
-      const smoothLabels = ['Lomené', 'Plynulé', 'Ultra Bézier', 'Full Hladké (Liquid)'];
-      UI.smoothVal.textContent = smoothLabels[UI.smoothness.value] || 'Full Hladké';
-
       // Prázdná místa
       UI.emptySpaceAmount.value = Math.round(appState.emptySpaceAmount * 100);
       UI.emptySpaceVal.textContent = `${Math.round(appState.emptySpaceAmount * 100)} %`;
@@ -2171,6 +2597,19 @@
       UI.viewAngle3DVal.textContent = `${appState.viewAngle3D}°`;
       UI.height3D.value = appState.height3D;
       UI.height3DVal.textContent = `${appState.height3D} px`;
+      if (UI.scaleY3D) {
+        UI.scaleY3D.value = appState.scaleY3D;
+        UI.scaleY3DVal.textContent = `${appState.scaleY3D.toFixed(1)} ×`;
+      }
+
+      // Vyplnění rozlišení
+      if (UI.fillCanvas100) UI.fillCanvas100.checked = appState.fillCanvas100;
+      if (UI.headerFillToggle) UI.headerFillToggle.checked = appState.fillCanvas100;
+      if (UI.canvasPadding) {
+        UI.canvasPadding.value = appState.canvasPadding;
+        UI.canvasPaddingVal.textContent = appState.canvasPadding === 0 ? '0 px (100% k hraně)' : `${appState.canvasPadding} px`;
+      }
+      updateFitModeButtons();
 
       UI.showGrid.checked = appState.showGrid;
       UI.gridOptionsContainer.classList.toggle('hidden', !appState.showGrid);
@@ -2192,6 +2631,14 @@
         UI.bgColorContainer.classList.remove('opacity-40', 'pointer-events-none');
       }
 
+      if (UI.seamlessMode) {
+        UI.seamlessMode.checked = !!appState.seamlessMode;
+        UI.containerSeamlessOptions.classList.toggle('hidden', !appState.seamlessMode);
+        if (UI.badgeSeamless) UI.badgeSeamless.style.display = appState.seamlessMode ? 'flex' : 'none';
+        updateSeamlessAxisButtons();
+        updateTilingButtonState();
+      }
+
       updateModeText();
       triggerUpdate(true);
       toast(`Aktivován styl: ${name}`);
@@ -2201,7 +2648,6 @@
       const descriptions = {
         'topo-alpine': 'Realistická topografická mapa podle Vzoru 1. Kombinuje horské masivy, erozní hřebeny, sedla a jemné zvlnění.',
         'smooth-blueprint': 'Čisté, plynulé oceánské laminární linie podle Vzoru 2. Ideální pro moderní technologický blueprint.',
-        'ultra-smooth': 'Full hladké organické linie podle Vzoru 3. Plynulé kapkovité a laminární křivky (Liquid Blobs) bez ostrých zlomů s velkorysým negativním prostorem.',
         'concentric-islands': 'Organické vrstevnicové ostrovy obklopené oceánem (přirozené uzavřené smyčky).',
         'ridged-canyons': 'Ostřejší horské terasy a erozní kaňony se stupňovitým profilem.',
         'turbulent-fluid': 'Fluidní vířivá turbulence pro moderní abstraktní a dynamická grafická pozadí.'
@@ -2353,6 +2799,23 @@
       triggerUpdate();
     });
 
+    UI.scaleY3D.addEventListener('input', (e) => {
+      appState.scaleY3D = parseFloat(e.target.value);
+      UI.scaleY3DVal.textContent = `${appState.scaleY3D.toFixed(1)} ×`;
+      triggerUpdate();
+    });
+
+    UI.btnAutofillHeight3D.addEventListener('click', () => {
+      const tiltRad = (appState.tilt3D * Math.PI) / 180;
+      const cosTilt = Math.max(0.25, Math.cos(tiltRad));
+      const targetScale = Math.min(3.0, Math.max(1.0, 1.0 / cosTilt));
+      appState.scaleY3D = parseFloat(targetScale.toFixed(2));
+      UI.scaleY3D.value = appState.scaleY3D;
+      UI.scaleY3DVal.textContent = `${appState.scaleY3D} ×`;
+      triggerUpdate(true);
+      toast(`Výška plátna ve 3D vyrovnána (${appState.scaleY3D}×)`);
+    });
+
     // 3D Presety tlačítek
     document.querySelectorAll('.preset-3d-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -2437,7 +2900,7 @@
         UI.inputWidth.value = w;
         UI.inputHeight.value = h;
         triggerUpdate(true);
-        toast(`Rozměr: ${w} × ${h} px`);
+        toast(`Rozměr nastaven: ${w} × ${h} px`);
       });
     });
 
@@ -2510,8 +2973,8 @@
 
     UI.smoothness.addEventListener('input', (e) => {
       appState.smoothness = parseInt(e.target.value);
-      const labels = ['Lomené', 'Plynulé', 'Ultra Bézier', 'Full Hladké (Liquid)'];
-      UI.smoothVal.textContent = labels[appState.smoothness] || 'Full Hladké';
+      const labels = ['Lomené', 'Plynulé', 'Ultra Bézier (Hladké)'];
+      UI.smoothVal.textContent = labels[appState.smoothness];
       triggerUpdate();
     });
 
@@ -2621,11 +3084,196 @@
       triggerUpdate(true);
     });
 
+    // --- NEKONEČNÝ OPAKOVATELNÝ VZOR (SEAMLESS TILE) ---
+    function setSeamlessMode(val) {
+      appState.seamlessMode = val;
+      UI.seamlessMode.checked = val;
+      UI.containerSeamlessOptions.classList.toggle('hidden', !val);
+      if (UI.badgeSeamless) UI.badgeSeamless.style.display = val ? 'flex' : 'none';
+      if (!val && appState.previewTiling) {
+        appState.previewTiling = false;
+        updateTilingButtonState();
+      }
+      render();
+      toast(val ? 'Nekonečný bezešvý vzor aktivován!' : 'Přepnuto na standardní vzor');
+    }
+
+    UI.seamlessMode.addEventListener('change', (e) => setSeamlessMode(e.target.checked));
+
+    function updateSeamlessAxisButtons() {
+      const isXY = appState.seamlessAxes === 'xy';
+      UI.btnSeamlessAxesXY.className = isXY 
+        ? 'seamless-axis-btn px-2.5 py-1.5 bg-emerald-600 text-white rounded font-medium text-center transition flex items-center justify-center gap-1.5'
+        : 'seamless-axis-btn px-2.5 py-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded font-medium text-center transition flex items-center justify-center gap-1.5';
+      UI.btnSeamlessAxesX.className = !isXY 
+        ? 'seamless-axis-btn px-2.5 py-1.5 bg-emerald-600 text-white rounded font-medium text-center transition flex items-center justify-center gap-1.5'
+        : 'seamless-axis-btn px-2.5 py-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded font-medium text-center transition flex items-center justify-center gap-1.5';
+    }
+
+    UI.btnSeamlessAxesXY.addEventListener('click', () => {
+      appState.seamlessAxes = 'xy';
+      updateSeamlessAxisButtons();
+      render();
+      toast('Napojení: Obousměrné (Dlaždice X i Y)');
+    });
+
+    UI.btnSeamlessAxesX.addEventListener('click', () => {
+      appState.seamlessAxes = 'x';
+      updateSeamlessAxisButtons();
+      render();
+      toast('Napojení: Pouze vodorovně (osa X)');
+    });
+
+    function toggleTilingPreview() {
+      if (!appState.seamlessMode) {
+        setSeamlessMode(true);
+      }
+      appState.previewTiling = !appState.previewTiling;
+      updateTilingButtonState();
+      render();
+      toast(appState.previewTiling ? 'Aktivován náhled spojení 2×2 dlaždic' : 'Náhled jedné dlaždice');
+    }
+
+    function updateTilingButtonState() {
+      const active = appState.previewTiling && appState.seamlessMode;
+      if (UI.btnToolbarTiling) {
+        UI.btnToolbarTiling.classList.toggle('border-emerald-500/80', active);
+        UI.btnToolbarTiling.classList.toggle('bg-slate-750', active);
+        if (UI.tilingPreviewIcon) {
+          UI.tilingPreviewIcon.className = active ? 'fa-solid fa-border-all text-emerald-400' : 'fa-solid fa-border-all text-slate-400';
+        }
+      }
+      if (UI.toggleTilingPreviewText) {
+        UI.toggleTilingPreviewText.textContent = active ? 'Vypnout náhled 2×2' : 'Přepnout náhled spojení 2×2';
+      }
+    }
+
+    UI.btnToggleTilingPreview.addEventListener('click', toggleTilingPreview);
+    if (UI.btnToolbarTiling) UI.btnToolbarTiling.addEventListener('click', toggleTilingPreview);
+
+    // Kopírovat CSS vzor pro nekonečné pozadí
+    UI.btnCopyCssPattern.addEventListener('click', () => {
+      if (!appState.svgOutput) return;
+      const tileSvg = appState.singleTileSvg || appState.svgOutput;
+      const svgDataUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(tileSvg);
+      const cssSnippet = '/* Nekonečný bezešvý topografický vzor */\n.topography-seamless-bg {\n  background-image: url("' + svgDataUri + '");\n  background-repeat: repeat;\n  background-size: ' + appState.width + 'px ' + appState.height + 'px;\n}';
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(cssSnippet).then(() => {
+          toast('CSS kód pro nekonečné pozadí zkopírován!');
+        }).catch(() => fallbackCopyText(cssSnippet));
+      } else {
+        fallbackCopyText(cssSnippet);
+      }
+    });
+
+    // Export 2x2 spojeného SVG
+    UI.btnExportTiled2x2.addEventListener('click', () => {
+      if (!appState.svgOutput) return;
+      const W = appState.width;
+      const H = appState.height;
+      const tileSvg = appState.singleTileSvg || appState.svgOutput;
+      
+      const strokeRgba = hexToRgb(appState.strokeColor, appState.strokeOpacity);
+      const indexOpacity = Math.min(1.0, appState.strokeOpacity + 0.20);
+      const indexStrokeRgba = hexToRgb(appState.strokeColor, indexOpacity);
+      const indexWidth = (appState.strokeWidth * appState.indexLineMultiplier).toFixed(2);
+      const bgMarkup = appState.transparentBg ? '' : '<rect width="' + W + '" height="' + H + '" fill="' + appState.bgColor + '" />\n';
+
+      const innerContent = tileSvg.substring(tileSvg.indexOf('<g class="topo-minor"'), tileSvg.lastIndexOf('</svg>'));
+
+      const svg2x2Export = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + (2*W) + ' ' + (2*H) + '" width="' + (2*W) + '" height="' + (2*H) + '">\n' +
+'  <defs>\n' +
+'    <style>\n' +
+'      .topo-minor { fill: none; stroke: ' + strokeRgba + '; stroke-width: ' + appState.strokeWidth + 'px; stroke-linecap: round; stroke-linejoin: round; }\n' +
+'      .topo-major { fill: none; stroke: ' + indexStrokeRgba + '; stroke-width: ' + indexWidth + 'px; stroke-linecap: round; stroke-linejoin: round; }\n' +
+'    </style>\n' +
+'    <g id="seamless-tile">\n' +
+'      ' + bgMarkup + '\n' +
+'      ' + innerContent + '\n' +
+'    </g>\n' +
+'  </defs>\n' +
+'  <use href="#seamless-tile" x="0" y="0" />\n' +
+'  <use href="#seamless-tile" x="' + W + '" y="0" />\n' +
+'  <use href="#seamless-tile" x="0" y="' + H + '" />\n' +
+'  <use href="#seamless-tile" x="' + W + '" y="' + H + '" />\n' +
+'</svg>';
+
+      const blob = new Blob([svg2x2Export], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'topocraft_' + appState.mode + '_' + (2*W) + 'x' + (2*H) + '_tiled2x2_seed' + appState.seed + '.svg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast('2×2 spojené SVG staženo (' + (2*W) + ' × ' + (2*H) + ' px)!');
+    });
+
+    // --- VYPLNĚNÍ ROZLIŠENÍ PLÁTNA (100% W × H) ---
+    function setFillCanvas(val) {
+      appState.fillCanvas100 = val;
+      UI.fillCanvas100.checked = val;
+      if (UI.headerFillToggle) UI.headerFillToggle.checked = val;
+      render();
+      toast(val ? 'Vyplnění 100% rozlišení aktivováno (0 prázdných pruhů)' : 'Přirozené měřítko');
+    }
+
+    UI.fillCanvas100.addEventListener('change', (e) => setFillCanvas(e.target.checked));
+    if (UI.headerFillToggle) {
+      UI.headerFillToggle.addEventListener('change', (e) => setFillCanvas(e.target.checked));
+    }
+
+    function updateFitModeButtons() {
+      const isStretch = appState.canvasFitMode === 'stretch-100';
+      if (UI.btnModeStretch && UI.btnModeCover) {
+        UI.btnModeStretch.className = isStretch 
+          ? 'fit-mode-btn px-2.5 py-1.5 bg-cyan-600 text-white rounded font-medium text-center transition flex items-center justify-center gap-1.5'
+          : 'fit-mode-btn px-2.5 py-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded font-medium text-center transition flex items-center justify-center gap-1.5';
+        UI.btnModeCover.className = !isStretch 
+          ? 'fit-mode-btn px-2.5 py-1.5 bg-cyan-600 text-white rounded font-medium text-center transition flex items-center justify-center gap-1.5'
+          : 'fit-mode-btn px-2.5 py-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded font-medium text-center transition flex items-center justify-center gap-1.5';
+      }
+    }
+
+    UI.btnModeStretch.addEventListener('click', () => {
+      appState.canvasFitMode = 'stretch-100';
+      updateFitModeButtons();
+      render();
+      toast('Režim: 100% roztažení na celou šířku i výšku');
+    });
+
+    UI.btnModeCover.addEventListener('click', () => {
+      appState.canvasFitMode = 'cover-100';
+      updateFitModeButtons();
+      render();
+      toast('Režim: Proporcionální pokrytí (Cover)');
+    });
+
+    UI.canvasPadding.addEventListener('input', (e) => {
+      appState.canvasPadding = parseInt(e.target.value);
+      UI.canvasPaddingVal.textContent = appState.canvasPadding === 0 ? '0 px (100% k hraně)' : `${appState.canvasPadding} px`;
+      render();
+    });
+
+    document.querySelectorAll('.pad-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = parseInt(btn.dataset.pad);
+        appState.canvasPadding = p;
+        UI.canvasPadding.value = p;
+        UI.canvasPaddingVal.textContent = p === 0 ? '0 px (100% k hraně)' : `${p} px`;
+        render();
+        toast(`Odsazení: ${p} px`);
+      });
+    });
+
+    // --- EXPORT & KOPÍROVÁNÍ (VŽDY PŘESNÉ ROZLIŠENÍ W × H) ---
     UI.btnCopySvg.addEventListener('click', () => {
       if (!appState.svgOutput) return;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(appState.svgOutput).then(() => {
-          toast('SVG kód byl zkopírován do schránky!');
+          toast(`SVG kód (${appState.width} × ${appState.height} px) zkopírován do schránky!`);
         }).catch(() => fallbackCopyText(appState.svgOutput));
       } else {
         fallbackCopyText(appState.svgOutput);
@@ -2650,25 +3298,29 @@
 
     UI.btnExportSvg.addEventListener('click', () => {
       if (!appState.svgOutput) return;
+      const W = appState.width;
+      const H = appState.height;
       const blob = new Blob([appState.svgOutput], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `topocraft_${appState.mode}_${appState.width}x${appState.height}_seed${appState.seed}.svg`;
+      link.download = `topocraft_${appState.mode}_${W}x${H}_seed${appState.seed}.svg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast('SVG soubor stažen!');
+      toast(`SVG soubor stažen (${W} × ${H} px, 100% vyplnění plátna)!`);
     });
 
     window.exportPNG = function(scaleFactor = 1) {
       if (!appState.svgOutput) return;
 
-      const canvas = document.getElementById('hiddenCanvas');
-      const targetW = appState.width * scaleFactor;
-      const targetH = appState.height * scaleFactor;
+      const W = appState.width;
+      const H = appState.height;
+      const targetW = Math.round(W * scaleFactor);
+      const targetH = Math.round(H * scaleFactor);
 
+      const canvas = document.getElementById('hiddenCanvas');
       canvas.width = targetW;
       canvas.height = targetH;
       const ctx = canvas.getContext('2d');
@@ -2690,7 +3342,7 @@
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          toast(`PNG staženo (${scaleFactor}x: ${targetW} × ${targetH} px)!`);
+          toast(`PNG staženo (${targetW} × ${targetH} px bez prázdných pruhů)!`);
         } catch (e) {
           toast('Chyba při exportu do PNG.');
         }
@@ -2702,21 +3354,21 @@
     UI.btnCopyPng.addEventListener('click', () => {
       if (!appState.svgOutput) return;
 
-      const canvas = document.getElementById('hiddenCanvas');
-      const targetW = appState.width;
-      const targetH = appState.height;
+      const W = appState.width;
+      const H = appState.height;
 
-      canvas.width = targetW;
-      canvas.height = targetH;
+      const canvas = document.getElementById('hiddenCanvas');
+      canvas.width = W;
+      canvas.height = H;
       const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, targetW, targetH);
+      ctx.clearRect(0, 0, W, H);
 
       const img = new Image();
       const svgBlob = new Blob([appState.svgOutput], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(svgBlob);
 
       img.onload = () => {
-        ctx.drawImage(img, 0, 0, targetW, targetH);
+        ctx.drawImage(img, 0, 0, W, H);
         URL.revokeObjectURL(url);
 
         canvas.toBlob((blob) => {
@@ -2728,7 +3380,7 @@
             navigator.clipboard.write([
               new ClipboardItem({ 'image/png': blob })
             ]).then(() => {
-              toast('PNG obrázek zkopírován do schránky!');
+              toast(`PNG obrázek (${W} × ${H} px) zkopírován bez pruhů!`);
             }).catch(() => {
               toast('Přímé kopírování PNG není podporováno prohlížečem.');
             });
@@ -2760,6 +3412,9 @@
       } else if (e.key === 'p' || e.key === 'P') {
         e.preventDefault();
         toggleAnimation();
+      } else if (e.key === 't' || e.key === 'T') {
+        e.preventDefault();
+        toggleTilingPreview();
       } else if (e.key === '+' || e.key === '=') {
         e.preventDefault();
         appState.zoomMode = Math.min(3.0, appState.zoomScale + 0.15);
