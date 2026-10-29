@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="cs" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokročilý Topografický Generátor Vzorů (SVG & PNG)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome ikony -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .checkerboard {
+      background-color: #0b0d13;
+      background-image: 
+        linear-gradient(45deg, #131722 25%, transparent 25%), 
+        linear-gradient(-45deg, #131722 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #131722 75%), 
+        linear-gradient(-45deg, transparent 75%, #131722 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+    input[type=range] {
+      accent-color: #8b5cf6;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0b0f19;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #252e42;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #374151;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden font-sans select-none antialiased bg-slate-950 text-slate-100">
+
+  <!-- Horní lišta / Header -->
+  <header class="h-14 border-b border-slate-800 bg-slate-900/95 backdrop-blur px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 via-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+        <i class="fa-solid fa-layer-group text-sm"></i>
+      </div>
+      <div>
+        <h1 class="text-sm sm:text-base font-bold tracking-tight text-white flex items-center gap-2">
+          TopoCraft Pro <span class="hidden sm:inline-block text-[11px] font-normal px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">Vektorový Studio Generátor</span>
+        </h1>
+      </div>
+    </div>
+
+    <!-- Horní akce -->
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <!-- Generovat podobný vzor -->
+      <button id="btnMutateVariation" title="Zachová parametry, ale jemně posune a zmutuje terén do podobné variace" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-brand-950/80 hover:bg-brand-900/80 text-brand-300 text-xs font-medium transition flex items-center gap-1.5 border border-brand-700/50">
+        <i class="fa-solid fa-wand-magic-sparkles text-brand-400"></i>
+        <span class="hidden md:inline">Podobná variace</span>
+        <span class="md:hidden">Variace</span>
+      </button>
+
+      <!-- Náhodný nový tvar -->
+      <button id="btnRandomizeTop" title="Zcela nový náhodný seed" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition flex items-center gap-1.5 border border-slate-700">
+        <i class="fa-solid fa-shuffle text-slate-400"></i>
+        <span class="hidden md:inline">Nový náhodný</span>
+      </button>
+
+      <!-- Kopírovat SVG -->
+      <button id="btnCopySvg" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition flex items-center gap-1.5 border border-slate-700">
+        <i class="fa-regular fa-copy"></i>
+        <span class="hidden sm:inline">Kopírovat SVG</span>
+      </button>
+
+      <!-- Export SVG -->
+      <button id="btnExportSvg" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow-md shadow-brand-600/20">
+        <i class="fa-solid fa-file-code"></i>
+        <span>SVG</span>
+      </button>
+
+      <!-- Export PNG -->
+      <div class="relative group">
+        <button id="btnExportPng" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow-md shadow-indigo-600/20">
+          <i class="fa-solid fa-image"></i>
+          <span>PNG</span>
+          <i class="fa-solid fa-angle-down text-[10px] ml-0.5 opacity-70"></i>
+        </button>
+        <div class="absolute right-0 mt-1 w-36 bg-slate-800 border border-slate-700 rounded-lg shadow-xl py-1 hidden group-hover:block z-50 text-xs">
+          <button class="w-full text-left px-3 py-1.5 hover:bg-slate-700 text-slate-200" onclick="exportPNG(1)">1x (Standard)</button>
+          <button class="w-full text-left px-3 py-1.5 hover:bg-slate-700 text-slate-200" onclick="exportPNG(2)">2x (Retina HD)</button>
+          <button class="w-full text-left px-3 py-1.5 hover:bg-slate-700 text-slate-200" onclick="exportPNG(4)">4x (Ultra 4K)</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hlavní pracovní plocha -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- Boční konfigurační panel -->
+    <aside class="w-80 sm:w-96 bg-slate-900/95 border-r border-slate-800 flex flex-col shrink-0 custom-scrollbar overflow-y-auto">
+      <div class="p-4 sm:p-5 space-y-6">
+
+        <!-- Stylové předvolby (Presets) -->
+        <section class="space-y-2">
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-palette text-brand-400"></i> Rychlé Presety
+          </label>
+          <div class="grid grid-cols-2 gap-1.5 text-xs">
+            <button class="preset-style-btn px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left text-slate-200 flex items-center gap-2" data-preset="dark-minimal">
+              <span class="w-2.5 h-2.5 rounded-full bg-slate-600 border border-slate-400"></span> Minimal Dark
+            </button>
+            <button class="preset-style-btn px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left text-slate-200 flex items-center gap-2" data-preset="violet-glow">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-500"></span> Cyber Violet
+            </button>
+            <button class="preset-style-btn px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left text-slate-200 flex items-center gap-2" data-preset="stealth-dense">
+              <span class="w-2.5 h-2.5 rounded-full bg-zinc-800 border border-zinc-600"></span> Dense Stealth
+            </button>
+            <button class="preset-style-btn px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left text-slate-200 flex items-center gap-2" data-preset="swiss-topo">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-100 border border-amber-900"></span> Swiss Topo
+            </button>
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80">
+
+        <!-- 1. Algoritmus generátoru -->
+        <section class="space-y-3">
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-microchip text-brand-400"></i> Typ Generátoru / Algoritmus
+          </label>
+          <select id="generatorMode" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-brand-500 cursor-pointer">
+            <option value="topo-fbm" selected>Topografická mapa (Erozní FBM + Warping)</option>
+            <option value="concentric-peaks">Organické vrcholy a ostrovy (Peaks & Valleys)</option>
+            <option value="vector-flow">Proudnicové vlnovky (Vector Streamlines)</option>
+            <option value="cellular-contours">Geologické buňky (Voronoi Contours)</option>
+          </select>
+          <p id="modeDescription" class="text-[11px] text-slate-400 leading-relaxed bg-slate-950/60 p-2.5 rounded border border-slate-800/80">
+            Hladké realistické vrstevnice modelované fraktálním šumem a doménovou deformací terénu.
+          </p>
+        </section>
+
+        <hr class="border-slate-800/80">
+
+        <!-- 2. Nastavení vrstevnic & Tvarování -->
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+              <i class="fa-solid fa-mountain text-brand-400"></i> Geometrie a hustota
+            </span>
+          </div>
+
+          <!-- Počet vrstevnic -->
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Počet vrstevnic (Hustota)</span>
+              <span id="levelsVal" class="font-mono text-brand-400 font-semibold">22</span>
+            </div>
+            <input type="range" id="levels" min="5" max="50" step="1" value="22" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+          </div>
+
+          <!-- Měřítko / Zoom -->
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Měřítko vln (Scale)</span>
+              <span id="scaleVal" class="font-mono text-brand-400 font-semibold">3.2</span>
+            </div>
+            <input type="range" id="scale" min="0.8" max="9.0" step="0.2" value="3.2" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+              <span>Široké vlny</span>
+              <span>Husté detaily</span>
+            </div>
+          </div>
+
+          <!-- Doménové zvlnění (Domain Warping / Turbulence) -->
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Turbulence / Organické zvlnění</span>
+              <span id="warpVal" class="font-mono text-brand-400 font-semibold">45 %</span>
+            </div>
+            <input type="range" id="domainWarp" min="0" max="100" step="5" value="45" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+          </div>
+
+          <!-- Vyhlazení křivek -->
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Vyhlazení křivek</span>
+              <span id="smoothVal" class="font-mono text-brand-400 font-semibold">Ultra Bézier</span>
+            </div>
+            <input type="range" id="smoothness" min="0" max="2" step="1" value="2" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+              <span>Lomené</span>
+              <span>Plynulé</span>
+              <span>Ultra Bézier</span>
+            </div>
+          </div>
+
+          <!-- Kartografické hlavní linie (Index Contours) -->
+          <div class="pt-2 border-t border-slate-800/60">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Zvýraznit každou N-tou linii</span>
+              <span id="indexLineVal" class="font-mono text-brand-400 font-semibold">Každou 5. linii</span>
+            </div>
+            <input type="range" id="indexLineFreq" min="0" max="10" step="1" value="5" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+              <span>Vypnuto (0)</span>
+              <span>Každou 10.</span>
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80">
+
+        <!-- 3. Styl čar (Stroke) -->
+        <section class="space-y-4">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-pen-nib text-brand-400"></i> Styl a tloušťka čar
+          </span>
+
+          <!-- Barva čar -->
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Barva křivek</span>
+              <span id="strokeColorVal" class="font-mono text-slate-400">#4f46e5</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="color" id="strokeColor" value="#4f46e5" class="w-10 h-8 rounded border border-slate-700 bg-transparent cursor-pointer p-0.5">
+              <input type="text" id="strokeColorText" value="#4f46e5" maxlength="7" class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-sm font-mono text-white uppercase focus:outline-none focus:border-brand-500">
+            </div>
+          </div>
+
+          <!-- Tloušťka čar -->
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Základní tloušťka (Stroke)</span>
+              <span id="strokeWidthVal" class="font-mono text-brand-400 font-semibold">1.8 px</span>
+            </div>
+            <input type="range" id="strokeWidth" min="0.4" max="8.0" step="0.2" value="1.8" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+          </div>
+
+          <!-- Krytí čar -->
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Průhlednost čar (Opacity)</span>
+              <span id="strokeOpacityVal" class="font-mono text-brand-400 font-semibold">70 %</span>
+            </div>
+            <input type="range" id="strokeOpacity" min="10" max="100" step="5" value="70" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80">
+
+        <!-- 4. Pozadí -->
+        <section class="space-y-4">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-fill-drip text-brand-400"></i> Pozadí
+          </span>
+
+          <div class="flex items-center justify-between p-3 rounded-lg bg-slate-950 border border-slate-800">
+            <label for="transparentBg" class="text-xs text-slate-200 cursor-pointer flex items-center gap-2 font-medium">
+              <i class="fa-solid fa-circle-half-stroke text-slate-400"></i> Průhledné pozadí (Transparent)
+            </label>
+            <input type="checkbox" id="transparentBg" class="w-4 h-4 rounded text-brand-600 focus:ring-0 cursor-pointer">
+          </div>
+
+          <div id="bgColorContainer">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Barva pozadí</span>
+              <span id="bgColorVal" class="font-mono text-slate-400">#07080d</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="color" id="bgColor" value="#07080d" class="w-10 h-8 rounded border border-slate-700 bg-transparent cursor-pointer p-0.5">
+              <input type="text" id="bgColorText" value="#07080d" maxlength="7" class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-sm font-mono text-white uppercase focus:outline-none focus:border-brand-500">
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80">
+
+        <!-- 5. Rozměry a Seed -->
+        <section class="space-y-4">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-brand-400"></i> Rozměry plátna & Seed
+          </span>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Šířka (W)</label>
+              <input type="number" id="inputWidth" value="1440" min="200" max="3840" step="10" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500 font-mono">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Výška (H)</label>
+              <input type="number" id="inputHeight" value="900" min="200" max="3840" step="10" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500 font-mono">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300">Seed vzoru</span>
+              <span id="seedVal" class="font-mono text-slate-400">#82914</span>
+            </div>
+            <div class="flex gap-2">
+              <input type="number" id="inputSeed" value="82914" class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500 font-mono">
+              <button id="btnNewSeed" title="Náhodný nový seed" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 transition">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </aside>
+
+    <!-- Hlavní plátno s náhledem -->
+    <main class="flex-1 flex flex-col bg-slate-950 relative overflow-hidden">
+      <!-- Stavový panel -->
+      <div class="h-9 px-4 bg-slate-900/60 border-b border-slate-800/80 flex items-center justify-between text-xs text-slate-400 select-none">
+        <div class="flex items-center gap-3">
+          <span><i class="fa-regular fa-image mr-1"></i> <span id="infoDim">1440 × 900 px</span></span>
+          <span class="text-slate-600">•</span>
+          <span><i class="fa-solid fa-bezier-curve mr-1 text-brand-400"></i> <span id="infoPaths">0 křivek</span></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="btnFit" class="text-slate-400 hover:text-white transition flex items-center gap-1">
+            <i class="fa-solid fa-arrows-to-eye"></i> Přizpůsobit oknu
+          </button>
+          <span class="inline-flex items-center gap-1.5 text-slate-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Vektorový náhled
+          </span>
+        </div>
+      </div>
+
+      <!-- Zobrazovací plocha se šachovnicí -->
+      <div class="flex-1 overflow-auto flex items-center justify-center p-6 checkerboard relative" id="previewViewport">
+        <div id="canvasWrapper" class="shadow-2xl rounded-sm transition-all duration-100 flex items-center justify-center relative ring-1 ring-white/10">
+          <div id="svgContainer" class="w-full h-full flex items-center justify-center"></div>
+        </div>
+      </div>
+
+      <!-- Toast oznámení -->
+      <div id="toast" class="absolute bottom-5 right-5 bg-slate-800/95 border border-brand-500/50 text-white px-4 py-2.5 rounded-lg shadow-xl text-xs flex items-center gap-2.5 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none z-50">
+        <i class="fa-solid fa-circle-check text-brand-400 text-sm"></i>
+        <span id="toastMsg">SVG zkopírováno!</span>
+      </div>
+    </main>
+
+  </div>
+
+  <canvas id="hiddenCanvas" class="hidden"></canvas>
+
+  <!-- Skript generátoru -->
+  <script>
+    /**
+     * Rychlý Simplex a 2D Perlin šum s doménovým warpingem
+     */
+    class TopoNoise {
+      constructor(seed = 1) {
+        this.p = new Uint8Array(256);
+        this.perm = new Uint8Array(512);
+        this.permMod12 = new Uint8Array(512);
+        this.grad3 = [
+          [1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],
+          [1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],
+          [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]
+        ];
+        this.offsetX = 0;
+        this.offsetY = 0;
+        this.setSeed(seed);
+      }
+
+      setSeed(seed) {
+        let s = Math.abs(seed) % 2147483647;
+        if (s <= 0) s = 1;
+        for (let i = 0; i < 256; i++) {
+          s = (s * 16807) % 2147483647;
+          this.p[i] = s % 256;
+        }
+        for (let i = 0; i < 512; i++) {
+          this.perm[i] = this.p[i & 255];
+          this.permMod12[i] = (this.perm[i] % 12);
+        }
+      }
+
+      noise2D(xin, yin) {
+        const F2 = 0.5 * (Math.sqrt(3.0) - 1.0);
+        const G2 = (3.0 - Math.sqrt(3.0)) / 6.0;
+        let n0 = 0, n1 = 0, n2 = 0;
+
+        const s = (xin + yin) * F2;
+        const i = Math.floor(xin + s);
+        const j = Math.floor(yin + s);
+        const t = (i + j) * G2;
+        const X0 = i - t;
+        const Y0 = j - t;
+        const x0 = xin - X0;
+        const y0 = yin - Y0;
+
+        let i1, j1;
+        if (x0 > y0) { i1 = 1; j1 = 0; }
+        else { i1 = 0; j1 = 1; }
+
+        const x1 = x0 - i1 + G2;
+        const y1 = y0 - j1 + G2;
+        const x2 = x0 - 1.0 + 2.0 * G2;
+        const y2 = y0 - 1.0 + 2.0 * G2;
+
+        const ii = i & 255;
+        const jj = j & 255;
+
+        let t0 = 0.5 - x0 * x0 - y0 * y0;
+        if (t0 >= 0) {
+          const gi0 = this.permMod12[ii + this.perm[jj]];
+          t0 *= t0;
+          n0 = t0 * t0 * (this.grad3[gi0][0] * x0 + this.grad3[gi0][1] * y0);
+        }
+
+        let t1 = 0.5 - x1 * x1 - y1 * y1;
+        if (t1 >= 0) {
+          const gi1 = this.permMod12[ii + i1 + this.perm[jj + j1]];
+          t1 *= t1;
+          n1 = t1 * t1 * (this.grad3[gi1][0] * x1 + this.grad3[gi1][1] * y1);
+        }
+
+        let t2 = 0.5 - x2 * x2 - y2 * y2;
+        if (t2 >= 0) {
+          const gi2 = this.permMod12[ii + 1 + this.perm[jj + 1]];
+          t2 *= t2;
+          n2 = t2 * t2 * (this.grad3[gi2][0] * x2 + this.grad3[gi2][1] * y2);
+        }
+
+        return (70.0 * (n0 + n1 + n2) + 1) * 0.5;
+      }
+
+      // Fractal Brownian Motion s doménovou distorzí
+      fbm(x, y, octaves = 3, warpIntensity = 0.4) {
+        let qx = x;
+        let qy = y;
+
+        if (warpIntensity > 0.01) {
+          const w1 = this.noise2D(x + 1.7, y + 9.2);
+          const w2 = this.noise2D(x + 8.3, y + 2.8);
+          qx += (w1 - 0.5) * warpIntensity * 2.2;
+          qy += (w2 - 0.5) * warpIntensity * 2.2;
+        }
+
+        let total = 0;
+        let freq = 1;
+        let amp = 1;
+        let maxAmp = 0;
+
+        for (let i = 0; i < octaves; i++) {
+          total += this.noise2D(qx * freq, qy * freq) * amp;
+          maxAmp += amp;
+          amp *= 0.5;
+          freq *= 2.0;
+        }
+
+        return total / maxAmp;
+      }
+    }
+
+    /**
+     * Algoritmus Marching Squares s lineární interpolací
+     */
+    function computeIsolines(grid, cols, rows, threshold, cellW, cellH) {
+      const segments = [];
+
+      for (let r = 0; r < rows - 1; r++) {
+        for (let c = 0; c < cols - 1; c++) {
+          const vTL = grid[r][c];
+          const vTR = grid[r][c + 1];
+          const vBR = grid[r + 1][c + 1];
+          const vBL = grid[r + 1][c];
+
+          const bTL = vTL >= threshold ? 1 : 0;
+          const bTR = vTR >= threshold ? 1 : 0;
+          const bBR = vBR >= threshold ? 1 : 0;
+          const bBL = vBL >= threshold ? 1 : 0;
+
+          const idx = (bTL << 3) | (bTR << 2) | (bBR << 1) | bBL;
+          if (idx === 0 || idx === 15) continue;
+
+          const x = c * cellW;
+          const y = r * cellH;
+
+          const lerp = (v1, v2, p1, p2) => {
+            if (Math.abs(v2 - v1) < 1e-6) return (p1 + p2) * 0.5;
+            return p1 + ((threshold - v1) / (v2 - v1)) * (p2 - p1);
+          };
+
+          const top = [lerp(vTL, vTR, x, x + cellW), y];
+          const right = [x + cellW, lerp(vTR, vBR, y, y + cellH)];
+          const bottom = [lerp(vBL, vBR, x, x + cellW), y + cellH];
+          const left = [x, lerp(vTL, vBL, y, y + cellH)];
+
+          switch (idx) {
+            case 1:  segments.push([left, bottom]); break;
+            case 2:  segments.push([bottom, right]); break;
+            case 3:  segments.push([left, right]); break;
+            case 4:  segments.push([top, right]); break;
+            case 5:  segments.push([left, top]); segments.push([bottom, right]); break;
+            case 6:  segments.push([top, bottom]); break;
+            case 7:  segments.push([left, top]); break;
+            case 8:  segments.push([left, top]); break;
+            case 9:  segments.push([top, bottom]); break;
+            case 10: segments.push([left, bottom]); segments.push([top, right]); break;
+            case 11: segments.push([top, right]); break;
+            case 12: segments.push([left, right]); break;
+            case 13: segments.push([bottom, right]); break;
+            case 14: segments.push([left, bottom]); break;
+          }
+        }
+      }
+
+      return segments;
+    }
+
+    /**
+     * Spojení segmentů do souvislých křivek
+     */
+    function assemblePaths(segments, snapTol) {
+      const paths = [];
+      const remaining = segments.map(s => ({
+        p0: [s[0][0], s[0][1]],
+        p1: [s[1][0], s[1][1]],
+        used: false
+      }));
+
+      const distSq = (a, b) => (a[0]-b[0])*(a[0]-b[0]) + (a[1]-b[1])*(a[1]-b[1]);
+      const tolSq = snapTol * snapTol;
+
+      for (let i = 0; i < remaining.length; i++) {
+        if (remaining[i].used) continue;
+        remaining[i].used = true;
+
+        const cur = [remaining[i].p0, remaining[i].p1];
+        let expanded = true;
+
+        while (expanded) {
+          expanded = false;
+          const head = cur[0];
+          const tail = cur[cur.length - 1];
+
+          for (let j = 0; j < remaining.length; j++) {
+            if (remaining[j].used) continue;
+            const s = remaining[j];
+
+            if (distSq(tail, s.p0) <= tolSq) {
+              cur.push(s.p1);
+              s.used = true;
+              expanded = true;
+              break;
+            } else if (distSq(tail, s.p1) <= tolSq) {
+              cur.push(s.p0);
+              s.used = true;
+              expanded = true;
+              break;
+            } else if (distSq(head, s.p1) <= tolSq) {
+              cur.unshift(s.p0);
+              s.used = true;
+              expanded = true;
+              break;
+            } else if (distSq(head, s.p0) <= tolSq) {
+              cur.unshift(s.p1);
+              s.used = true;
+              expanded = true;
+              break;
+            }
+          }
+        }
+
+        if (cur.length >= 2) {
+          paths.push(cur);
+        }
+      }
+
+      return paths;
+    }
+
+    /**
+     * Převod bodů na hladký SVG Path kód (Catmull-Rom na kubické Béziery)
+     */
+    function pointsToSvgPath(paths, smoothnessMode) {
+      if (!paths || paths.length === 0) return '';
+      let d = '';
+
+      for (const pts of paths) {
+        if (pts.length < 2) continue;
+
+        if (smoothnessMode === 0) {
+          d += `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)} `;
+          for (let i = 1; i < pts.length; i++) {
+            d += `L ${pts[i][0].toFixed(1)} ${pts[i][1].toFixed(1)} `;
+          }
+        } else if (smoothnessMode === 1) {
+          d += `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)} `;
+          for (let i = 1; i < pts.length - 1; i++) {
+            const mx = (pts[i][0] + pts[i + 1][0]) * 0.5;
+            const my = (pts[i][1] + pts[i + 1][1]) * 0.5;
+            d += `Q ${pts[i][0].toFixed(1)} ${pts[i][1].toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)} `;
+          }
+          const last = pts[pts.length - 1];
+          d += `L ${last[0].toFixed(1)} ${last[1].toFixed(1)} `;
+        } else {
+          // Ultra Catmull-Rom to Cubic Bézier Spline
+          d += `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)} `;
+          if (pts.length === 2) {
+            d += `L ${pts[1][0].toFixed(1)} ${pts[1][1].toFixed(1)} `;
+          } else {
+            for (let i = 0; i < pts.length - 1; i++) {
+              const p0 = i > 0 ? pts[i - 1] : pts[i];
+              const p1 = pts[i];
+              const p2 = pts[i + 1];
+              const p3 = i < pts.length - 2 ? pts[i + 2] : p2;
+
+              const cp1x = p1[0] + (p2[0] - p0[0]) / 6;
+              const cp1y = p1[1] + (p2[1] - p0[1]) / 6;
+              const cp2x = p2[0] - (p3[0] - p1[0]) / 6;
+              const cp2y = p2[1] - (p3[1] - p1[1]) / 6;
+
+              d += `C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)} `;
+            }
+          }
+        }
+      }
+
+      return d.trim();
+    }
+
+    // --- STAV APLIKACE ---
+    const appState = {
+      mode: 'topo-fbm',
+      width: 1440,
+      height: 900,
+      levels: 22,
+      scale: 3.2,
+      domainWarp: 0.45,
+      smoothness: 2,
+      strokeColor: '#4f46e5',
+      strokeWidth: 1.8,
+      strokeOpacity: 0.70,
+      indexLineFreq: 5, // každá 5. linie je zesílená
+      transparentBg: false,
+      bgColor: '#07080d',
+      seed: 82914,
+      variationOffset: 0,
+      svgOutput: ''
+    };
+
+    const noiseEngine = new TopoNoise(appState.seed);
+
+    // DOM Prvky
+    const UI = {
+      generatorMode: document.getElementById('generatorMode'),
+      modeDescription: document.getElementById('modeDescription'),
+      inputWidth: document.getElementById('inputWidth'),
+      inputHeight: document.getElementById('inputHeight'),
+      levels: document.getElementById('levels'),
+      levelsVal: document.getElementById('levelsVal'),
+      scale: document.getElementById('scale'),
+      scaleVal: document.getElementById('scaleVal'),
+      domainWarp: document.getElementById('domainWarp'),
+      warpVal: document.getElementById('warpVal'),
+      smoothness: document.getElementById('smoothness'),
+      smoothVal: document.getElementById('smoothVal'),
+      indexLineFreq: document.getElementById('indexLineFreq'),
+      indexLineVal: document.getElementById('indexLineVal'),
+      strokeColor: document.getElementById('strokeColor'),
+      strokeColorText: document.getElementById('strokeColorText'),
+      strokeColorVal: document.getElementById('strokeColorVal'),
+      strokeWidth: document.getElementById('strokeWidth'),
+      strokeWidthVal: document.getElementById('strokeWidthVal'),
+      strokeOpacity: document.getElementById('strokeOpacity'),
+      strokeOpacityVal: document.getElementById('strokeOpacityVal'),
+      transparentBg: document.getElementById('transparentBg'),
+      bgColor: document.getElementById('bgColor'),
+      bgColorText: document.getElementById('bgColorText'),
+      bgColorVal: document.getElementById('bgColorVal'),
+      bgColorContainer: document.getElementById('bgColorContainer'),
+      inputSeed: document.getElementById('inputSeed'),
+      seedVal: document.getElementById('seedVal'),
+      btnNewSeed: document.getElementById('btnNewSeed'),
+      btnRandomizeTop: document.getElementById('btnRandomizeTop'),
+      btnMutateVariation: document.getElementById('btnMutateVariation'),
+      svgContainer: document.getElementById('svgContainer'),
+      canvasWrapper: document.getElementById('canvasWrapper'),
+      infoDim: document.getElementById('infoDim'),
+      infoPaths: document.getElementById('infoPaths'),
+      btnCopySvg: document.getElementById('btnCopySvg'),
+      btnExportSvg: document.getElementById('btnExportSvg'),
+      btnFit: document.getElementById('btnFit'),
+      toast: document.getElementById('toast'),
+      toastMsg: document.getElementById('toastMsg')
+    };
+
+    let debounceTimer = null;
+    function triggerUpdate(immediate = false) {
+      if (immediate) render();
+      else {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(render, 35);
+      }
+    }
+
+    /**
+     * VÝPOČET VÝŠKOVÉ MAPY (Podle zvoleného módu)
+     */
+    function computeHeightField(cols, rows, W, H) {
+      const grid = new Array(rows);
+      const baseScale = (appState.scale * 0.001);
+      const vOffset = appState.variationOffset;
+
+      if (appState.mode === 'topo-fbm') {
+        // Multi-octave FBM + domain warping pro přirozenou topografii
+        for (let r = 0; r < rows; r++) {
+          grid[r] = new Float32Array(cols);
+          const y = (r * (H / (rows - 1)) + vOffset * 10) * baseScale;
+          for (let c = 0; c < cols; c++) {
+            const x = (c * (W / (cols - 1)) + vOffset * 10) * baseScale;
+            grid[r][c] = noiseEngine.fbm(x, y, 3, appState.domainWarp);
+          }
+        }
+      } else if (appState.mode === 'concentric-peaks') {
+        // Organické ostrovy & horské vrcholy (Concentric peaks s distorzí)
+        // Vygeneruje několik náhodných center
+        const seedRng = (s) => {
+          let t = s + 0x6D2B79F5;
+          t = Math.imul(t ^ t >>> 15, t | 1);
+          t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+
+        const peaks = [];
+        const numPeaks = 4;
+        for (let i = 0; i < numPeaks; i++) {
+          const px = W * (0.2 + 0.6 * seedRng(appState.seed + i * 17 + vOffset));
+          const py = H * (0.2 + 0.6 * seedRng(appState.seed + i * 31 + vOffset));
+          peaks.push({ x: px, y: py, weight: 0.8 + 0.5 * seedRng(appState.seed + i * 5) });
+        }
+
+        const maxDim = Math.max(W, H) * 0.6;
+        for (let r = 0; r < rows; r++) {
+          grid[r] = new Float32Array(cols);
+          const py = r * (H / (rows - 1));
+          for (let c = 0; c < cols; c++) {
+            const px = c * (W / (cols - 1));
+            let minDist = 999999;
+            for (const p of peaks) {
+              const d = Math.hypot(px - p.x, py - p.y) / p.weight;
+              if (d < minDist) minDist = d;
+            }
+            const normDist = minDist / maxDim;
+            const noiseVal = noiseEngine.noise2D(px * baseScale * 1.5, py * baseScale * 1.5);
+            const distorted = normDist + (noiseVal - 0.5) * (appState.domainWarp * 0.8 + 0.2);
+            grid[r][c] = Math.max(0, Math.min(1, 1 - distorted));
+          }
+        }
+      } else if (appState.mode === 'vector-flow') {
+        // Proudnicové vlnovky (Vector Streamlines / tekoucí linie)
+        for (let r = 0; r < rows; r++) {
+          grid[r] = new Float32Array(cols);
+          const y = (r * (H / (rows - 1))) * baseScale * 1.2;
+          for (let c = 0; c < cols; c++) {
+            const x = (c * (W / (cols - 1))) * baseScale * 0.7;
+            const wave = Math.sin(x * 3.5 + noiseEngine.noise2D(x * 1.2, y * 1.2) * 5.0 * appState.domainWarp);
+            const secondary = Math.cos(y * 2.5 + noiseEngine.noise2D(x + 5, y + 5) * 3.0);
+            grid[r][c] = (wave * 0.6 + secondary * 0.4 + 1) * 0.5;
+          }
+        }
+      } else if (appState.mode === 'cellular-contours') {
+        // Geologické buňky (Voronoi-like buňková elevace s plynulým zaoblením)
+        for (let r = 0; r < rows; r++) {
+          grid[r] = new Float32Array(cols);
+          const y = (r * (H / (rows - 1))) * baseScale * 1.8;
+          for (let c = 0; c < cols; c++) {
+            const x = (c * (W / (cols - 1))) * baseScale * 1.8;
+            const n1 = noiseEngine.noise2D(x, y);
+            const n2 = noiseEngine.noise2D(x + 4.2, y + 2.8);
+            const cell = Math.abs(n1 - n2) * 2.0;
+            grid[r][c] = Math.max(0, Math.min(1, cell));
+          }
+        }
+      }
+
+      return grid;
+    }
+
+    /**
+     * VYKRESLENÍ A GENEROVÁNÍ SVG
+     */
+    function render() {
+      noiseEngine.setSeed(appState.seed);
+
+      const W = appState.width;
+      const H = appState.height;
+
+      // Hustota buněk mřížky (optimalizováno pro plynulost a detail)
+      const step = Math.max(10, Math.min(24, Math.floor(Math.max(W, H) / 90)));
+      const cols = Math.ceil(W / step) + 1;
+      const rows = Math.ceil(H / step) + 1;
+      const cellW = W / (cols - 1);
+      const cellH = H / (rows - 1);
+
+      const grid = computeHeightField(cols, rows, W, H);
+
+      let totalPathCount = 0;
+      let standardPathsData = '';
+      let indexPathsData = '';
+
+      const numLevels = appState.levels;
+      const indexFreq = appState.indexLineFreq;
+
+      for (let l = 1; l <= numLevels; l++) {
+        // Distribuce úrovní
+        const threshold = 0.05 + (l / (numLevels + 1)) * 0.90;
+        const segments = computeIsolines(grid, cols, rows, threshold, cellW, cellH);
+
+        if (segments.length > 0) {
+          const paths = assemblePaths(segments, Math.max(cellW, cellH) * 0.65);
+          totalPathCount += paths.length;
+          const d = pointsToSvgPath(paths, appState.smoothness);
+
+          if (d) {
+            // Určení, zda je linie hlavní indexová (kartografické zvýraznění)
+            const isIndex = (indexFreq > 0) && (l % indexFreq === 0);
+            if (isIndex) {
+              indexPathsData += `<path d="${d}" />\n`;
+            } else {
+              standardPathsData += `<path d="${d}" />\n`;
+            }
+          }
+        }
+      }
+
+      // Vykreslení SVG
+      const bgMarkup = appState.transparentBg 
+        ? '' 
+        : `<rect width="${W}" height="${H}" fill="${appState.bgColor}" />\n`;
+
+      const strokeRgba = hexToRgb(appState.strokeColor, appState.strokeOpacity);
+      const indexOpacity = Math.min(1.0, appState.strokeOpacity + 0.25);
+      const indexStrokeRgba = hexToRgb(appState.strokeColor, indexOpacity);
+      const indexWidth = (appState.strokeWidth * 2.2).toFixed(1);
+
+      const svgDoc = 
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" height="100%">
+  <defs>
+    <style>
+      .topo-base {
+        fill: none;
+        stroke: ${strokeRgba};
+        stroke-width: ${appState.strokeWidth}px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .topo-index {
+        fill: none;
+        stroke: ${indexStrokeRgba};
+        stroke-width: ${indexWidth}px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+  </defs>
+  ${bgMarkup}
+  <g class="topo-base">
+    ${standardPathsData}
+  </g>
+  <g class="topo-index">
+    ${indexPathsData}
+  </g>
+</svg>`;
+
+      appState.svgOutput = svgDoc;
+      UI.svgContainer.innerHTML = svgDoc;
+
+      // Stylizovaný rámeček náhledu
+      UI.canvasWrapper.style.aspectRatio = `${W} / ${H}`;
+      UI.canvasWrapper.style.width = '100%';
+      UI.canvasWrapper.style.maxWidth = `${Math.min(W, 1100)}px`;
+      UI.canvasWrapper.style.backgroundColor = appState.transparentBg ? 'transparent' : appState.bgColor;
+
+      UI.infoDim.textContent = `${W} × ${H} px`;
+      UI.infoPaths.textContent = `${totalPathCount} křivek`;
+    }
+
+    function hexToRgb(hex, alpha = 1) {
+      let c = hex.replace('#', '');
+      if (c.length === 3) c = c.split('').map(x => x + x).join('');
+      const n = parseInt(c, 16);
+      return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+    }
+
+    function toast(text) {
+      UI.toastMsg.textContent = text;
+      UI.toast.classList.remove('translate-y-16', 'opacity-0');
+      UI.toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        UI.toast.classList.remove('translate-y-0', 'opacity-100');
+        UI.toast.classList.add('translate-y-16', 'opacity-0');
+      }, 2400);
+    }
+
+    // --- PŘEDNASTAVENÉ STYLY (PRESETS) ---
+    const PRESETS = {
+      'dark-minimal': {
+        mode: 'topo-fbm',
+        strokeColor: '#383e4e',
+        strokeWidth: 1.6,
+        strokeOpacity: 0.65,
+        bgColor: '#08090d',
+        levels: 24,
+        scale: 3.4,
+        domainWarp: 0.45,
+        indexLineFreq: 5,
+        transparentBg: false
+      },
+      'violet-glow': {
+        mode: 'topo-fbm',
+        strokeColor: '#7c3aed',
+        strokeWidth: 2.2,
+        strokeOpacity: 0.85,
+        bgColor: '#0a0614',
+        levels: 18,
+        scale: 2.8,
+        domainWarp: 0.55,
+        indexLineFreq: 4,
+        transparentBg: false
+      },
+      'stealth-dense': {
+        mode: 'topo-fbm',
+        strokeColor: '#27272a',
+        strokeWidth: 1.2,
+        strokeOpacity: 0.90,
+        bgColor: '#09090b',
+        levels: 36,
+        scale: 4.2,
+        domainWarp: 0.35,
+        indexLineFreq: 6,
+        transparentBg: false
+      },
+      'swiss-topo': {
+        mode: 'concentric-peaks',
+        strokeColor: '#b45309',
+        strokeWidth: 1.5,
+        strokeOpacity: 0.75,
+        bgColor: '#fcfbf7',
+        levels: 26,
+        scale: 3.0,
+        domainWarp: 0.30,
+        indexLineFreq: 5,
+        transparentBg: false
+      }
+    };
+
+    function applyPreset(name) {
+      const p = PRESETS[name];
+      if (!p) return;
+      Object.assign(appState, p);
+
+      UI.generatorMode.value = appState.mode;
+      UI.strokeColor.value = appState.strokeColor;
+      UI.strokeColorText.value = appState.strokeColor.toUpperCase();
+      UI.strokeColorVal.textContent = appState.strokeColor;
+      UI.strokeWidth.value = appState.strokeWidth;
+      UI.strokeWidthVal.textContent = `${appState.strokeWidth} px`;
+      UI.strokeOpacity.value = Math.round(appState.strokeOpacity * 100);
+      UI.strokeOpacityVal.textContent = `${Math.round(appState.strokeOpacity * 100)} %`;
+      UI.bgColor.value = appState.bgColor;
+      UI.bgColorText.value = appState.bgColor.toUpperCase();
+      UI.bgColorVal.textContent = appState.bgColor;
+      UI.levels.value = appState.levels;
+      UI.levelsVal.textContent = appState.levels;
+      UI.scale.value = appState.scale;
+      UI.scaleVal.textContent = appState.scale.toFixed(1);
+      UI.domainWarp.value = Math.round(appState.domainWarp * 100);
+      UI.warpVal.textContent = `${Math.round(appState.domainWarp * 100)} %`;
+      UI.indexLineFreq.value = appState.indexLineFreq;
+      UI.indexLineVal.textContent = appState.indexLineFreq === 0 ? 'Vypnuto' : `Každou ${appState.indexLineFreq}. linii`;
+      UI.transparentBg.checked = appState.transparentBg;
+
+      updateModeText();
+      triggerUpdate(true);
+      toast(`Aktivován styl: ${name}`);
+    }
+
+    function updateModeText() {
+      const descriptions = {
+        'topo-fbm': 'Hladké realistické vrstevnice modelované fraktálním šumem a doménovou deformací terénu.',
+        'concentric-peaks': 'Organické vrstevnicové ostrovy obklopující horské vrcholy a prohlubně (přirozené uzavřené smyčky).',
+        'vector-flow': 'Směrové vlnovité linie a proudnice pro moderní grafická a technologická pozadí.',
+        'cellular-contours': 'Drsnější erozní geologické útvary rozdělené do mikrobuňkových zón.'
+      };
+      UI.modeDescription.textContent = descriptions[appState.mode] || '';
+    }
+
+    // --- EVENT LISTENERY ---
+
+    document.querySelectorAll('.preset-style-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+    });
+
+    UI.generatorMode.addEventListener('change', (e) => {
+      appState.mode = e.target.value;
+      updateModeText();
+      triggerUpdate(true);
+    });
+
+    // Mutace - Generovat podobnou variaci
+    UI.btnMutateVariation.addEventListener('click', () => {
+      appState.variationOffset += 0.85; // posune vzor v prostoru bez změny stylu
+      triggerUpdate(true);
+      toast('Vygenerována podobná variace terénu!');
+    });
+
+    // Zcela nový náhodný seed
+    const rollNewSeed = () => {
+      appState.seed = Math.floor(Math.random() * 900000) + 10000;
+      appState.variationOffset = 0;
+      UI.inputSeed.value = appState.seed;
+      UI.seedVal.textContent = `#${appState.seed}`;
+      triggerUpdate(true);
+      toast('Nový náhodný tvar!');
+    };
+
+    UI.btnNewSeed.addEventListener('click', rollNewSeed);
+    UI.btnRandomizeTop.addEventListener('click', rollNewSeed);
+
+    UI.inputSeed.addEventListener('input', (e) => {
+      appState.seed = parseInt(e.target.value) || 1;
+      appState.variationOffset = 0;
+      UI.seedVal.textContent = `#${appState.seed}`;
+      triggerUpdate();
+    });
+
+    // Rozměry
+    UI.inputWidth.addEventListener('input', (e) => {
+      appState.width = Math.max(100, Math.min(3840, parseInt(e.target.value) || 800));
+      triggerUpdate();
+    });
+
+    UI.inputHeight.addEventListener('input', (e) => {
+      appState.height = Math.max(100, Math.min(3840, parseInt(e.target.value) || 600));
+      triggerUpdate();
+    });
+
+    // Posuvníky
+    UI.levels.addEventListener('input', (e) => {
+      appState.levels = parseInt(e.target.value);
+      UI.levelsVal.textContent = appState.levels;
+      triggerUpdate();
+    });
+
+    UI.scale.addEventListener('input', (e) => {
+      appState.scale = parseFloat(e.target.value);
+      UI.scaleVal.textContent = appState.scale.toFixed(1);
+      triggerUpdate();
+    });
+
+    UI.domainWarp.addEventListener('input', (e) => {
+      appState.domainWarp = parseInt(e.target.value) / 100;
+      UI.warpVal.textContent = `${e.target.value} %`;
+      triggerUpdate();
+    });
+
+    UI.smoothness.addEventListener('input', (e) => {
+      appState.smoothness = parseInt(e.target.value);
+      const labels = ['Lomené', 'Plynulé', 'Ultra Bézier'];
+      UI.smoothVal.textContent = labels[appState.smoothness];
+      triggerUpdate();
+    });
+
+    UI.indexLineFreq.addEventListener('input', (e) => {
+      appState.indexLineFreq = parseInt(e.target.value);
+      UI.indexLineVal.textContent = appState.indexLineFreq === 0 ? 'Vypnuto' : `Každou ${appState.indexLineFreq}. linii`;
+      triggerUpdate();
+    });
+
+    UI.strokeWidth.addEventListener('input', (e) => {
+      appState.strokeWidth = parseFloat(e.target.value);
+      UI.strokeWidthVal.textContent = `${appState.strokeWidth} px`;
+      triggerUpdate();
+    });
+
+    UI.strokeOpacity.addEventListener('input', (e) => {
+      appState.strokeOpacity = parseInt(e.target.value) / 100;
+      UI.strokeOpacityVal.textContent = `${e.target.value} %`;
+      triggerUpdate();
+    });
+
+    // Barvy
+    UI.strokeColor.addEventListener('input', (e) => {
+      appState.strokeColor = e.target.value;
+      UI.strokeColorText.value = e.target.value.toUpperCase();
+      UI.strokeColorVal.textContent = e.target.value;
+      triggerUpdate();
+    });
+
+    UI.strokeColorText.addEventListener('input', (e) => {
+      if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+        appState.strokeColor = e.target.value;
+        UI.strokeColor.value = e.target.value;
+        UI.strokeColorVal.textContent = e.target.value;
+        triggerUpdate();
+      }
+    });
+
+    UI.bgColor.addEventListener('input', (e) => {
+      appState.bgColor = e.target.value;
+      UI.bgColorText.value = e.target.value.toUpperCase();
+      UI.bgColorVal.textContent = e.target.value;
+      triggerUpdate();
+    });
+
+    UI.bgColorText.addEventListener('input', (e) => {
+      if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+        appState.bgColor = e.target.value;
+        UI.bgColor.value = e.target.value;
+        UI.bgColorVal.textContent = e.target.value;
+        triggerUpdate();
+      }
+    });
+
+    UI.transparentBg.addEventListener('change', (e) => {
+      appState.transparentBg = e.target.checked;
+      if (appState.transparentBg) {
+        UI.bgColorContainer.classList.add('opacity-40', 'pointer-events-none');
+      } else {
+        UI.bgColorContainer.classList.remove('opacity-40', 'pointer-events-none');
+      }
+      triggerUpdate(true);
+    });
+
+    // Přizpůsobení oknu
+    UI.btnFit.addEventListener('click', () => {
+      UI.canvasWrapper.style.maxWidth = '100%';
+      toast('Plátno přizpůsobeno oknu');
+    });
+
+    // Export: Kopírovat SVG
+    UI.btnCopySvg.addEventListener('click', () => {
+      if (!appState.svgOutput) return;
+      const t = document.createElement("textarea");
+      t.value = appState.svgOutput;
+      t.style.position = "fixed";
+      t.style.left = "-99999px";
+      document.body.appendChild(t);
+      t.select();
+      try {
+        document.execCommand('copy');
+        toast('SVG kód byl zkopírován do schránky!');
+      } catch (err) {
+        toast('Kopírování selhalo');
+      }
+      document.body.removeChild(t);
+    });
+
+    // Export: Stáhnout SVG
+    UI.btnExportSvg.addEventListener('click', () => {
+      if (!appState.svgOutput) return;
+      const blob = new Blob([appState.svgOutput], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `topocraft_${appState.mode}_${appState.width}x${appState.height}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast('SVG soubor stažen!');
+    });
+
+    // Export: Stáhnout PNG s volitelným násobičem rozlišení
+    window.exportPNG = function(scaleFactor = 1) {
+      if (!appState.svgOutput) return;
+
+      const canvas = document.getElementById('hiddenCanvas');
+      const targetW = appState.width * scaleFactor;
+      const targetH = appState.height * scaleFactor;
+
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, targetW, targetH);
+
+      const img = new Image();
+      const svgBlob = new Blob([appState.svgOutput], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, targetW, targetH);
+        URL.revokeObjectURL(url);
+
+        try {
+          const pngUrl = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.href = pngUrl;
+          link.download = `topocraft_${appState.mode}_${targetW}x${targetH}_${scaleFactor}x.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          toast(`PNG staženo (${scaleFactor}x: ${targetW}×${targetH} px)!`);
+        } catch (e) {
+          toast('Chyba při exportu do PNG.');
+        }
+      };
+
+      img.src = url;
+    };
+
+    // Spuštění při načtení
+    window.onload = () => {
+      render();
+    };
+  </script>
+</body>
+</html>
